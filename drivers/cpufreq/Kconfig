@@ -116,16 +116,12 @@ config CPU_FREQ_DEFAULT_GOV_INTERACTIVE
 	  'interactive' governor for latency-sensitive workloads.
 
 config CPU_FREQ_DEFAULT_GOV_WHEATLEY
+	bool "wheatley"
+	select CPU_FREQ_GOV_WHEATLEY
+	select CPU_FREQ_GOV_PERFORMANCE
+	help
+	  Use the CPUFreq governor 'wheatley' as default.
 
-+	bool "wheatley"
-
-+	select CPU_FREQ_GOV_WHEATLEY
-
-+	select CPU_FREQ_GOV_PERFORMANCE
-
-+	help
-
-+	  Use the CPUFreq governor 'wheatley' as default.
 endchoice
 
 config CPU_FREQ_GOV_PERFORMANCE
