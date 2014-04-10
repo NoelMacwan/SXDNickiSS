@@ -12,6 +12,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+ * MODIFIED BY THIRDZCEE TO WORK WITH XPERIA M WITHOUT BREAKING WIFI
  */
 #include <linux/earlysuspend.h>
 #include <linux/workqueue.h>
@@ -30,22 +31,22 @@
 #define DEF_SAMPLING_RATE		(50000)
 #define DEF_SAMPLING_MS			(200)
 
-#define DUAL_CORE_PERSISTENCE		15
+#define DUAL_CORE_PERSISTENCE		25
 #define TRI_CORE_PERSISTENCE		12
 #define QUAD_CORE_PERSISTENCE		9
 
 #define RUN_QUEUE_THRESHOLD		38
 
-#define CPU_DOWN_FACTOR			3
+#define CPU_DOWN_FACTOR			10
 
 static DEFINE_MUTEX(intelli_plug_mutex);
 
 struct delayed_work intelli_plug_work;
 
-static unsigned int intelli_plug_active = 0;
+static unsigned int intelli_plug_active = 1;
 module_param(intelli_plug_active, uint, 0644);
 
-static unsigned int eco_mode_active = 0;
+static unsigned int eco_mode_active = 1;
 module_param(eco_mode_active, uint, 0644);
 
 static unsigned int persist_count = 0;
@@ -121,7 +122,7 @@ static int mp_decision(void)
 
 static unsigned int calculate_thread_stats(void)
 {
-	unsigned int avg_nr_run = avg_nr_running();
+	unsigned int avg_nr_run = nr_running();
 	unsigned int nr_run;
 	unsigned int threshold_size;
 

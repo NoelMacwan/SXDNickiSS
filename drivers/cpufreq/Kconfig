@@ -162,7 +162,6 @@ config CPU_FREQ_DEFAULT_GOV_INTELLIDEMAND
 	select CPU_FREQ_GOV_INTELLIDEMAND
 	help
 	  Use the CPUFreq governor 'intellidemand' as default.
-
 endchoice
 
 config CPU_FREQ_GOV_PERFORMANCE
