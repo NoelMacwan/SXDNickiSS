@@ -174,6 +174,12 @@ config CPU_FREQ_DEFAULT_GOV_BADASS
 	  do fast frequency switching (i.e, very low latency frequency
 	  transitions).
 
+config CPU_FREQ_DEFAULT_GOV_LIONHEART
+	bool "lionheart"
+	select CPU_FREQ_GOV_LIONHEART
+	help
+	 Use the CPUFreq governor 'lionheart' as default.
+
 	  If in doubt, say N.
 
 endchoice
@@ -434,6 +440,12 @@ config CPU_FREQ_GOV_BADASS_ALLOW_BYPASS
 	depends on CPU_FREQ_GOV_BADASS_2_PHASE
 	help
 	  'allow_bypass' - This driver adds a bypass to the phases
+
+config CPU_FREQ_GOV_LIONHEART
+	tristate "'lionheart' cpufreq governor"
+	depends on CPU_FREQ
+	help
+	 Use the CPUFreq governor 'lionheart' as default.
 
 menu "x86 CPU frequency scaling drivers"
 depends on X86
