@@ -116,18 +116,14 @@ static struct kgsl_device_iommu_data kgsl_3d0_iommu_data[] = {
 static struct kgsl_device_platform_data kgsl_3d0_pdata = {
 	.pwrlevel = {
 		{
-<<<<<<< HEAD
-			.gpu_freq = 450000000,
-=======
 			.gpu_freq = 487500000,
 			.bus_freq = 4,
 			.io_fraction = 0,
 		},
 		{
 			.gpu_freq = 320000000,
->>>>>>> f5d75ce... gpu OC/UC implemented without sods/random reboots
 			.bus_freq = 3,
-			.io_fraction = 0,
+			.io_fraction = 33,
 		},
 		{
 			.gpu_freq = 266667000,
