@@ -1338,6 +1338,7 @@ static const struct snd_kcontrol_new tabla_snd_controls[] = {
 				   tabla_get_compander, tabla_set_compander),
 };
 
+
 static const char *rx_mix1_text[] = {
 	"ZERO", "SRC1", "SRC2", "IIR1", "IIR2", "RX1", "RX2", "RX3", "RX4",
 		"RX5", "RX6", "RX7"
@@ -2882,7 +2883,6 @@ static void tx_hpf_corner_freq_callback(struct work_struct *work)
 #define  CF_MIN_3DB_75HZ		0x1
 #define  CF_MIN_3DB_150HZ		0x2
 
-
 static int tabla_codec_enable_ldo_h(struct snd_soc_dapm_widget *w,
 				    struct snd_kcontrol *kcontrol, int event);
 
@@ -4121,12 +4121,10 @@ static int tabla_volatile(struct snd_soc_codec *ssc, unsigned int reg)
 }
 
 #define TABLA_FORMATS (SNDRV_PCM_FMTBIT_S16_LE)
-static int tabla_write(struct snd_soc_codec *codec, unsigned int reg,
 #ifndef CONFIG_SOUND_CONTROL_HAX_GPL
 static
 #endif
-
-+int tabla_write(struct snd_soc_codec *codec, unsigned int reg,
+int tabla_write(struct snd_soc_codec *codec, unsigned int reg,
 	unsigned int value)
 {
 	int ret;
@@ -5915,7 +5913,7 @@ static void tabla_codec_report_plug(struct snd_soc_codec *codec, int insertion,
 
 		if (jack_type == SND_JACK_HEADPHONE) {
 			tabla->current_plug = PLUG_TYPE_HEADPHONE;
-		} else if (jack_type == SND_JACK_UNSUPPORTED)
+		} else if (jack_type == SND_JACK_UNSUPPORTED) {
 			tabla->current_plug = PLUG_TYPE_GND_MIC_SWAP;
 		} else if (jack_type == SND_JACK_HEADSET) {
 			tabla->mbhc_polling_active = true;
@@ -7783,7 +7781,6 @@ static irqreturn_t tabla_hs_remove_irq(int irq, void *data)
 	pr_debug("%s: enter, removal interrupt\n", __func__);
 
 	TABLA_ACQUIRE_LOCK(priv->codec_resource_lock);
-	vddio = (priv->mbhc_data.micb_mv != VDDIO_MICBIAS_MV &&
 	vddio = !mbhc_micbias_on &&
 		(priv->mbhc_data.micb_mv != VDDIO_MICBIAS_MV &&
 		 priv->mbhc_micbias_switched);
@@ -8307,6 +8304,7 @@ static int tabla_handle_pdata(struct tabla_priv *tabla)
 			    (!pdata->micbias.bias3_ext_cap << 4));
 	snd_soc_update_bits(codec, tabla->reg_addr.micb_4_ctl, 0x10,
 			    (!pdata->micbias.bias4_ext_cap << 4));
+
 
 	for (i = 0; i < 6; j++, i += 2) {
 		if (flag & (0x01 << i)) {
@@ -8899,6 +8897,7 @@ static int tabla_codec_probe(struct snd_soc_codec *codec)
 		pr_err("%s: Failed to register pm_notifier %d\n", __func__,
 		       ret);
 		goto err_hphr_ocp_irq;
+	}
 
 	for (i = 0; i < ARRAY_SIZE(tabla_dai); i++) {
 		switch (tabla_dai[i].id) {
