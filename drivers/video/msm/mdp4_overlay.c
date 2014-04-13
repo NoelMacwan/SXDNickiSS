@@ -134,7 +134,7 @@ void  mdp4_overlay_free_base_pipe(struct msm_fb_data_type *mfd)
 		else if (ctrl->panel_mode & MDP4_PANEL_LCDC)
 			mdp4_lcdc_free_base_pipe(mfd);
 	} else if (hdmi_prim_display || mfd->index == 1) {
-		mdp4_dtv_free_base_pipe(mfd);
+		//mdp4_dtv_free_base_pipe(mfd);
 	}
 }
 
