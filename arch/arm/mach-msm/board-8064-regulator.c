@@ -579,15 +579,15 @@ mpq8064_gpio_regulator_pdata[] __devinitdata = {
 /* SAW regulator constraints */
 struct regulator_init_data msm8064_saw_regulator_pdata_8921_s5 =
 	/*	      ID  vreg_name	       min_uV   max_uV */
-	SAW_VREG_INIT(S5, "8921_s5",	       850000, 1300000);
+	SAW_VREG_INIT(S5, "8921_s5",	       850000, 1350000);
 struct regulator_init_data msm8064_saw_regulator_pdata_8921_s6 =
-	SAW_VREG_INIT(S6, "8921_s6",	       850000, 1300000);
+	SAW_VREG_INIT(S6, "8921_s6",	       750000, 1350000);
 
 struct regulator_init_data msm8064_saw_regulator_pdata_8821_s0 =
 	/*	      ID       vreg_name	min_uV  max_uV */
-	SAW_VREG_INIT(8821_S0, "8821_s0",       850000, 1300000);
+	SAW_VREG_INIT(8821_S0, "8821_s0",       750000, 1350000);
 struct regulator_init_data msm8064_saw_regulator_pdata_8821_s1 =
-	SAW_VREG_INIT(8821_S1, "8821_s1",       850000, 1300000);
+	SAW_VREG_INIT(8821_S1, "8821_s1",       750000, 1350000);
 
 /* PM8921 regulator constraints */
 struct pm8xxx_regulator_platform_data
@@ -642,7 +642,7 @@ apq8064_rpm_regulator_init_data[] __devinitdata = {
 	/*	ID a_on pd ss min_uV   max_uV  supply sys_uA  freq  fm  ss_fm */
 	RPM_SMPS(S1, 1, 1, 0, 1225000, 1225000, NULL, 100000, 3p20, NONE, NONE),
 	RPM_SMPS(S2, 0, 1, 0, 1300000, 1300000, NULL,      0, 1p60, NONE, NONE),
-	RPM_SMPS(S3, 0, 1, 1,  500000, 1150000, NULL, 100000, 4p80, NONE, NONE),
+	RPM_SMPS(S3, 0, 1, 1,  500000, 1250000, NULL, 100000, 4p80, NONE, NONE),
 	RPM_SMPS(S4, 1, 1, 0, 1800000, 1800000, NULL, 100000, 1p60, AUTO, AUTO),
 	RPM_SMPS(S7, 0, 0, 0, 1300000, 1300000, NULL, 100000, 3p20, NONE, NONE),
 	RPM_SMPS(S8, 0, 1, 0, 2200000, 2200000, NULL,      0, 1p60, NONE, NONE),
@@ -650,7 +650,7 @@ apq8064_rpm_regulator_init_data[] __devinitdata = {
 	/*	ID a_on pd ss min_uV   max_uV   supply    sys_uA init_ip */
 	RPM_LDO(L1,  1, 1, 0, 1100000, 1100000, "8921_s4",     0,  1000),
 	RPM_LDO(L2,  0, 1, 0, 1200000, 1200000, "8921_s4",     0,     0),
-	RPM_LDO(L3,  0, 1, 0, 3075000, 3300000, NULL,          0,     0),
+	RPM_LDO(L3,  0, 1, 0, 3075000, 3075000, NULL,          0,     0),
 	RPM_LDO(L4,  1, 1, 0, 1800000, 1800000, NULL,          0, 10000),
 	RPM_LDO(L5,  0, 1, 0, 2950000, 2950000, NULL,          0,     0),
 	RPM_LDO(L6,  0, 1, 0, 2950000, 2950000, NULL,          0,     0),
@@ -669,7 +669,7 @@ apq8064_rpm_regulator_init_data[] __devinitdata = {
 	RPM_LDO(L21, 0, 1, 0, 1050000, 1050000, NULL,          0,     0),
 	RPM_LDO(L22, 0, 1, 0, 2600000, 2600000, NULL,          0,     0),
 	RPM_LDO(L23, 0, 1, 0, 1800000, 1800000, NULL,          0,     0),
-	RPM_LDO(L24, 0, 1, 1,  750000, 1150000, "8921_s1", 10000, 10000),
+	RPM_LDO(L24, 0, 1, 1,  750000, 1250000, "8921_s1", 10000, 10000),
 	RPM_LDO(L25, 1, 1, 0, 1250000, 1250000, "8921_s1", 10000, 10000),
 	RPM_LDO(L27, 0, 0, 0, 1100000, 1100000, "8921_s7",     0,     0),
 	RPM_LDO(L28, 0, 1, 0, 1050000, 1050000, "8921_s7",     0,     0),
@@ -762,19 +762,6 @@ void __init configure_apq8064_pm8917_power_grid(void)
 			rpm_data->init_data.num_consumer_supplies
 				= ARRAY_SIZE(vreg_consumers_8917_S1);
 		}
-
-		/*
-		 * Currently min/max voltage level for LD03 was set to 3.075V.
-		 * But some Full speed USB headsets requires higher cross over
-		 * voltage. The cross over voltage is directly proportional
-		 * to the phy 3.3V rail voltage. So modified the max voltage
-		 * level of LD03 to 3.3V. But apq8064_rpm_regulator_init_data
-		 * is shared between PM8921 and PM8917, so set max_uV back to
-		 * 3.075V for PM8917.
-		 */
-		 if (rpm_data->id == RPM_VREG_ID_PM8921_L3)
-			rpm_data->init_data.constraints.max_uV = 3075000;
-
 	}
 
 	/*

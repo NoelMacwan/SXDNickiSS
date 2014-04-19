@@ -185,6 +185,13 @@ static unsigned msm_ion_sf_size = MSM_ION_SF_SIZE;
 #define MSM_ION_HEAP_NUM	1
 #endif
 
+#ifdef CONFIG_CPU_FREQ_GOV_BADASS_2_PHASE
+int set_two_phase_freq_badass(int cpufreq);
+#endif
+#ifdef CONFIG_CPU_FREQ_GOV_BADASS_3_PHASE
+int set_three_phase_freq_badass(int cpufreq);
+#endif
+
 #ifdef CONFIG_KERNEL_MSM_CONTIG_MEM_REGION
 static unsigned msm_contig_mem_size = MSM_CONTIG_MEM_SIZE;
 static int __init msm_contig_mem_size_setup(char *p)
@@ -1711,18 +1718,17 @@ static uint8_t spm_power_collapse_with_rpm[] __initdata = {
 
 /* 8960AB has a different command to assert apc_pdn */
 static uint8_t spm_power_collapse_without_rpm_krait_v3[] __initdata = {
-	0x00, 0x30, 0x24, 0x30,
-	0x84, 0x10, 0x09, 0x03,
-	0x01, 0x10, 0x84, 0x30,
-	0x0C, 0x24, 0x30, 0x0f,
+	0x00, 0x24, 0x84, 0x10,
+	0x09, 0x03, 0x01,
+	0x10, 0x84, 0x30, 0x0C,
+	0x24, 0x30, 0x0f,
 };
 
 static uint8_t spm_power_collapse_with_rpm_krait_v3[] __initdata = {
-	0x00, 0x30, 0x24, 0x30,
-	0x84, 0x10, 0x09, 0x07,
-	0x01, 0x0B, 0x10, 0x84,
-	0x30, 0x0C, 0x24, 0x30,
-	0x0f,
+	0x00, 0x24, 0x84, 0x10,
+	0x09, 0x07, 0x01, 0x0B,
+	0x10, 0x84, 0x30, 0x0C,
+	0x24, 0x30, 0x0f,
 };
 
 static struct msm_spm_seq_entry msm_spm_boot_cpu_seq_list[] __initdata = {
@@ -2480,12 +2486,14 @@ static struct msm_i2c_platform_data msm8960_i2c_qup_gsbi3_pdata = {
 	.clk_freq = 100000,
 	.src_clk_rate = 24000000,
 };
-
+/* MTD-BSP-VT-GSBI-00-[ */
+#if 0
 static struct msm_i2c_platform_data msm8960_i2c_qup_gsbi10_pdata = {
 	.clk_freq = 100000,
 	.src_clk_rate = 24000000,
 };
-
+#endif
+/* MTD-BSP-VT-GSBI-00-] */
 static struct msm_i2c_platform_data msm8960_i2c_qup_gsbi12_pdata = {
 	.clk_freq = 100000,
 	.src_clk_rate = 24000000,
@@ -2548,9 +2556,15 @@ static struct platform_device msm_tsens_device = {
 static struct msm_thermal_data msm_thermal_pdata = {
 	.sensor_id = 0,
 	.poll_ms = 250,
-	.limit_temp_degC = 60,
+	.limit_temp_degC = 75,
 	.temp_hysteresis_degC = 10,
 	.freq_step = 2,
+#ifdef CONFIG_INTELLI_THERMAL
+	.freq_control_mask = 0xf,
+	.core_limit_temp_degC = 80,
+	.core_temp_hysteresis_degC = 10,
+	.core_control_mask = 0xe,
+#endif
 };
 
 #ifdef CONFIG_MSM_FAKE_BATTERY
@@ -2622,7 +2636,6 @@ static struct msm_serial_hs_platform_data msm_uart_dm8_pdata = {
 	.uart_rx_gpio		= 35,
 	.uart_cts_gpio		= 36,
 	.uart_rfr_gpio		= 37,
-	.uartdm_rx_buf_size	= 1024,
 };
 #else
 static struct msm_serial_hs_platform_data msm_uart_dm8_pdata;
@@ -2796,7 +2809,7 @@ static struct platform_device *common_devices[] __initdata = {
 	&msm8960_device_qup_spi_gsbi1,
 	&msm8960_device_qup_i2c_gsbi3,
 	&msm8960_device_qup_i2c_gsbi4,
-	&msm8960_device_qup_i2c_gsbi10,
+	/* &msm8960_device_qup_i2c_gsbi10, */ /* MTD-BSP-VT-GSBI-00- */
 #ifndef CONFIG_MSM_DSPS
 	&msm8960_device_qup_i2c_gsbi12,
 #endif
@@ -2936,10 +2949,12 @@ static void __init msm8960_i2c_init(void)
 
 	msm8960_device_qup_i2c_gsbi3.dev.platform_data =
 					&msm8960_i2c_qup_gsbi3_pdata;
-
+/* MTD-BSP-VT-GSBI-00-[ */
+#if 0
 	msm8960_device_qup_i2c_gsbi10.dev.platform_data =
 					&msm8960_i2c_qup_gsbi10_pdata;
-
+#endif
+/* MTD-BSP-VT-GSBI-00-] */
 	msm8960_device_qup_i2c_gsbi12.dev.platform_data =
 					&msm8960_i2c_qup_gsbi12_pdata;
 }
@@ -2952,10 +2967,7 @@ static void __init msm8960_gfx_init(void)
 
 	/* Fixup data that needs to change based on GPU ID */
 	if (cpu_is_msm8960ab()) {
-		if (SOCINFO_VERSION_MINOR(soc_platform_version) == 0)
-			kgsl_3d0_pdata->chipid = ADRENO_CHIPID(3, 2, 1, 0);
-		else
-			kgsl_3d0_pdata->chipid = ADRENO_CHIPID(3, 2, 1, 1);
+		kgsl_3d0_pdata->chipid = ADRENO_CHIPID(3, 2, 1, 0);
 		/* 8960PRO nominal clock rate is 320Mhz */
 		kgsl_3d0_pdata->pwrlevel[1].gpu_freq = 320000000;
 	} else {
@@ -3056,13 +3068,13 @@ static struct msm_rpmrs_platform_data msm_rpmrs_data __initdata = {
 		[MSM_RPMRS_VDD_MEM_RET_LOW]	= 750000,
 		[MSM_RPMRS_VDD_MEM_RET_HIGH]	= 750000,
 		[MSM_RPMRS_VDD_MEM_ACTIVE]	= 1050000,
-		[MSM_RPMRS_VDD_MEM_MAX]		= 1150000,
+		[MSM_RPMRS_VDD_MEM_MAX]		= 1250000,
 	},
 	.vdd_dig_levels = {
 		[MSM_RPMRS_VDD_DIG_RET_LOW]	= 500000,
 		[MSM_RPMRS_VDD_DIG_RET_HIGH]	= 750000,
 		[MSM_RPMRS_VDD_DIG_ACTIVE]	= 950000,
-		[MSM_RPMRS_VDD_DIG_MAX]		= 1150000,
+		[MSM_RPMRS_VDD_DIG_MAX]		= 1250000,
 	},
 	.vdd_mask = 0x7FFFFF,
 	.rpmrs_target_id = {
@@ -3093,12 +3105,6 @@ struct i2c_registry {
 	int                    bus;
 	struct i2c_board_info *info;
 	int                    len;
-};
-
-/* AVTimer */
-static struct platform_device msm_dev_avtimer_device = {
-	.name = "dev_avtimer",
-	.dev = { .platform_data = &dev_avtimer_pdata },
 };
 
 /* Sensors DSPS platform data */
@@ -3472,10 +3478,6 @@ static void __init msm8960_cdp_init(void)
 	if (socinfo_get_platform_subtype() == PLATFORM_SUBTYPE_SGLTE) {
 		mdm_sglte_device.dev.platform_data = &sglte_platform_data;
 		platform_device_register(&mdm_sglte_device);
-	}
-	if (machine_is_msm8960_mtp() || machine_is_msm8960_fluid() ||
-		machine_is_msm8960_cdp()) {
-		platform_device_register(&msm_dev_avtimer_device);
 	}
 }
 

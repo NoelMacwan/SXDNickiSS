@@ -1,5 +1,5 @@
-/* Copyright (c) 2009-2013, The Linux Foundation. All rights reserved.
- *
+/*Copyright (c) 2009-2013, The Linux Foundation. All rights reserved.
+ * Copyright(C) 2013 Foxconn International Holdings, Ltd. All rights.
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
  * only version 2 as published by the Free Software Foundation.
@@ -9,6 +9,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -1541,7 +1542,7 @@ static struct clk_freq_tbl clk_tbl_sdc[] = {
 	F_END
 };
 
-static CLK_SDC(sdc1_clk, 1, 6,  52000000, 208000000);
+static CLK_SDC(sdc1_clk, 1, 6,  52000000, 104000000);
 static CLK_SDC(sdc2_clk, 2, 5,  52000000, 104000000);
 static CLK_SDC(sdc3_clk, 3, 4, 104000000, 208000000);
 static CLK_SDC(sdc4_clk, 4, 3,  33000000,  67000000);
@@ -3408,6 +3409,8 @@ static struct clk_freq_tbl clk_tbl_gfx2d[] = {
 	F_GFX2D(177778000, pll2, 2,  9),
 	F_GFX2D(200000000, pll2, 1,  4),
 	F_GFX2D(228571000, pll2, 2,  7),
+	F_GFX2D(266667000, pll2, 1,  3),
+	F_GFX2D(320000000, pll2, 1,  2),
 	F_END
 };
 
@@ -3451,7 +3454,7 @@ static struct rcg_clk gfx2d0_clk = {
 		.ops = &clk_ops_rcg,
 		.flags = CLKFLAG_SKIP_HANDOFF,
 		VDD_DIG_FMAX_MAP3(LOW,  100000000, NOMINAL, 200000000,
-				  HIGH, 228571000),
+				  HIGH, 320000000),
 		CLK_INIT(gfx2d0_clk.c),
 	},
 };
@@ -3496,7 +3499,7 @@ static struct rcg_clk gfx2d1_clk = {
 		.ops = &clk_ops_rcg,
 		.flags = CLKFLAG_SKIP_HANDOFF,
 		VDD_DIG_FMAX_MAP3(LOW,  100000000, NOMINAL, 200000000,
-				  HIGH, 228571000),
+				  HIGH, 320000000),
 		CLK_INIT(gfx2d1_clk.c),
 	},
 };
@@ -3530,6 +3533,7 @@ static struct clk_freq_tbl clk_tbl_gfx3d[] = {
 	F_GFX3D(320000000, pll2,  2,  5),
 	F_GFX3D(400000000, pll2,  1,  2),
 	F_GFX3D(450000000, pll15, 1,  2),
+	F_GFX3D(487500000, pll15, 1,  2),
 	F_END
 };
 
@@ -3551,6 +3555,8 @@ static struct clk_freq_tbl clk_tbl_gfx3d_8960[] = {
 	F_GFX3D(300000000, pll3, 1,  4),
 	F_GFX3D(320000000, pll2, 2,  5),
 	F_GFX3D(400000000, pll2, 1,  2),
+	F_GFX3D(450000000, pll15, 1,  2),
+    F_GFX3D(487500000, pll15, 1,  2),
 	F_END
 };
 
@@ -3572,37 +3578,38 @@ static struct clk_freq_tbl clk_tbl_gfx3d_8930ab[] = {
 	F_GFX3D(266667000, pll2,  1,  3),
 	F_GFX3D(320000000, pll2,  2,  5),
 	F_GFX3D(400000000, pll2,  1,  2),
+	F_GFX3D(487500000, pll15, 1,  2),
 	F_GFX3D(500000000, pll15, 1,  2),
 	F_END
 };
 
 static unsigned long fmax_gfx3d_8064ab[VDD_DIG_NUM] = {
 	[VDD_DIG_LOW]     = 128000000,
-	[VDD_DIG_NOMINAL] = 325000000,
-	[VDD_DIG_HIGH]    = 450000000
+	[VDD_DIG_NOMINAL] = 266667000,
+	[VDD_DIG_HIGH]    = 487500000
 };
 
 static unsigned long fmax_gfx3d_8064[VDD_DIG_NUM] = {
 	[VDD_DIG_LOW]     = 128000000,
-	[VDD_DIG_NOMINAL] = 325000000,
-	[VDD_DIG_HIGH]    = 400000000
+	[VDD_DIG_NOMINAL] = 266667000,
+	[VDD_DIG_HIGH]    = 487500000
 };
 
 static unsigned long fmax_gfx3d_8930[VDD_DIG_NUM] = {
-	[VDD_DIG_LOW]     = 192000000,
-	[VDD_DIG_NOMINAL] = 320000000,
-	[VDD_DIG_HIGH]    = 400000000
+	[VDD_DIG_LOW]     = 128000000,
+	[VDD_DIG_NOMINAL] = 266667000,
+	[VDD_DIG_HIGH]    = 487500000
 };
 
 static unsigned long fmax_gfx3d_8930aa[VDD_DIG_NUM] = {
-	[VDD_DIG_LOW]     = 192000000,
-	[VDD_DIG_NOMINAL] = 320000000,
-	[VDD_DIG_HIGH]    = 450000000
+	[VDD_DIG_LOW]     = 128000000,
+	[VDD_DIG_NOMINAL] = 266667000,
+	[VDD_DIG_HIGH]    = 487500000
 };
 
 static unsigned long fmax_gfx3d_8930ab[VDD_DIG_NUM] = {
-	[VDD_DIG_LOW]     = 192000000,
-	[VDD_DIG_NOMINAL] = 320000000,
+	[VDD_DIG_LOW]     = 128000000,
+	[VDD_DIG_NOMINAL] = 266667000,
 	[VDD_DIG_HIGH]    = 500000000
 };
 
@@ -4349,8 +4356,10 @@ static struct rcg_clk vcodec_clk = {
 	.c = {
 		.dbg_name = "vcodec_clk",
 		.ops = &clk_ops_rcg,
+/* MM-VH-CODEC-01*[ */
 		VDD_DIG_FMAX_MAP3(LOW,  100000000, NOMINAL, 200000000,
-				  HIGH, 228571000),
+				  HIGH, 228570000),
+/* MM-VH-CODEC-01*] */
 		CLK_INIT(vcodec_clk.c),
 		.depends = &vcodec_axi_clk.c,
 	},
@@ -6099,8 +6108,11 @@ static struct clk_lookup msm_clocks_8930[] = {
 	CLK_LOOKUP("iface_clk",		gsbi8_p_clk.c,		"qup_i2c.8"),
 	/* used on 8930 SGLTE for Primary IPC */
 	CLK_LOOKUP("iface_clk",         gsbi9_p_clk.c,	"msm_serial_hs.1"),
+/* MTD-BSP-VT-GSBI-00-[ */
+#if 0
 	CLK_LOOKUP("iface_clk",		gsbi9_p_clk.c,		"qup_i2c.0"),
 	CLK_LOOKUP("iface_clk",		gsbi10_p_clk.c,		"qup_i2c.10"),
+#endif
 	/* used on 8930 SGLTE for serial console */
 	CLK_LOOKUP("iface_clk",         gsbi10_p_clk.c, "msm_serial_hsl.1"),
 	CLK_LOOKUP("iface_clk",		gsbi11_p_clk.c,	"msm_serial_hsl.2"),
@@ -6120,7 +6132,7 @@ static struct clk_lookup msm_clocks_8930[] = {
 	CLK_LOOKUP("iface_clk",		pmic_arb1_p_clk.c,	""),
 	CLK_LOOKUP("core_clk",		pmic_ssbi2_clk.c,	""),
 	CLK_LOOKUP("mem_clk",		rpm_msg_ram_p_clk.c,	""),
-//FIH-SW-MM-MC-BringUpCameraRawSensorS5k4e1-00+{
+//FIH-SW-MM-MC-BringUpCameraRawSensorS5k4e1-00+}
 #ifndef CONFIG_FIH_CAMERA
 	CLK_LOOKUP("cam_clk",		cam0_clk.c,	"4-001a"),
 	CLK_LOOKUP("cam_clk",		cam1_clk.c,	"4-006c"),
@@ -6128,7 +6140,7 @@ static struct clk_lookup msm_clocks_8930[] = {
 	CLK_LOOKUP("cam_clk",		cam2_clk.c,		NULL),
 	CLK_LOOKUP("cam_clk",		cam0_clk.c,	"4-0020"),
 #endif
-
+//MM-MC-ImplementSlaveAddressSwitchMechanism-00*{
 #if (defined(CONFIG_S5K4E1) || defined(CONFIG_S5K4E1_2ND) || defined(CONFIG_AR0543))
     CLK_LOOKUP("cam_clk",       cam0_clk.c, "4-006c"),
 #endif
@@ -6138,13 +6150,24 @@ static struct clk_lookup msm_clocks_8930[] = {
 #ifdef CONFIG_AR0543
     CLK_LOOKUP("cam_clk",       cam0_clk.c, "4-006e"),
 #endif
+//MM-MC-ImplementSlaveAddressSwitchMechanism-00*}
+//FIH-SW-MM-MC-BringUpFrontCameraMT9V115-00+{
 #ifdef CONFIG_MT9V115
     CLK_LOOKUP("cam_clk",		cam1_clk.c,	"4-007a"),
 #endif
+//FIH-SW-MM-MC-BringUpFrontCameraMT9V115-00+}
+//FIH-SW-MM-MC-BringUpCameraYUVSensorForHM03D5-00+{
 #ifdef CONFIG_HM03D5
     CLK_LOOKUP("cam_clk",       cam1_clk.c, "4-0060"),
 #endif
-//FIH-SW-MM-MC-BringUpCameraRawSensorS5k4e1-00+}
+//FIH-SW-MM-MC-BringUpCameraYUVSensorForHM03D5-00+}
+	CLK_LOOKUP("cam_clk",		cam0_clk.c,	"8-001a"),
+	CLK_LOOKUP("cam_clk",		cam0_clk.c,	"8-0036"),
+	CLK_LOOKUP("cam_clk",		cam1_clk.c,	"8-006c"),
+	CLK_LOOKUP("cam_clk",		cam1_clk.c,	"8-0010"),
+	CLK_LOOKUP("cam_clk",		cam1_clk.c,	"8-0048"),
+	CLK_LOOKUP("cam_clk",		cam2_clk.c,		NULL),
+	CLK_LOOKUP("cam_clk",		cam0_clk.c,	"8-0020"),
 	CLK_LOOKUP("csi_src_clk",	csi0_src_clk.c,		"msm_csid.0"),
 	CLK_LOOKUP("csi_src_clk",	csi1_src_clk.c,		"msm_csid.1"),
 	CLK_LOOKUP("csi_src_clk",	csi2_src_clk.c,		"msm_csid.2"),

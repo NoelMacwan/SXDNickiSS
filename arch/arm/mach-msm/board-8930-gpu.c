@@ -116,17 +116,22 @@ static struct kgsl_device_iommu_data kgsl_3d0_iommu_data[] = {
 static struct kgsl_device_platform_data kgsl_3d0_pdata = {
 	.pwrlevel = {
 		{
-			.gpu_freq = 400000000,
-			.bus_freq = 3,
+			.gpu_freq = 487500000,
+			.bus_freq = 4,
 			.io_fraction = 0,
 		},
 		{
 			.gpu_freq = 320000000,
+			.bus_freq = 3,
+			.io_fraction = 33,
+		},
+		{
+			.gpu_freq = 266667000,
 			.bus_freq = 2,
 			.io_fraction = 33,
 		},
 		{
-			.gpu_freq = 192000000,
+			.gpu_freq = 128000000,
 			.bus_freq = 1,
 			.io_fraction = 100,
 		},
@@ -136,7 +141,7 @@ static struct kgsl_device_platform_data kgsl_3d0_pdata = {
 		},
 	},
 	.init_level = 1,
-	.num_levels = 4,
+	.num_levels = 5,
 	.set_grp_async = NULL,
 	.idle_timeout = HZ/12,
 	.nap_allowed = true,
@@ -166,7 +171,7 @@ void __init msm8930_init_gpu(void)
 	/* Set the turbo speed for the AA and AB respectively */
 
 	if (cpu_is_msm8930aa())
-		kgsl_3d0_pdata.pwrlevel[0].gpu_freq = 450000000;
+		kgsl_3d0_pdata.pwrlevel[0].gpu_freq = 487500000;
 	else if (cpu_is_msm8930ab()) {
 		kgsl_3d0_pdata.pwrlevel[0].gpu_freq = 500000000;
 		grp3d_max_vectors[0].ib = KGSL_CONVERT_TO_MBPS(4800);
