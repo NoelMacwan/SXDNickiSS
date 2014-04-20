@@ -504,9 +504,9 @@ msm8930_pm8038_gpio_regulator_pdata[] __devinitdata = {
 /* SAW regulator constraints */
 struct regulator_init_data msm8930_pm8038_saw_regulator_core0_pdata =
 	/*	      ID  vreg_name	       min_uV   max_uV */
-	SAW_VREG_INIT(S5, "8038_s5",	       750000, 1350000);
+	SAW_VREG_INIT(S5, "8038_s5",	       850000, 1300000);
 struct regulator_init_data msm8930_pm8038_saw_regulator_core1_pdata =
-	SAW_VREG_INIT(S6, "8038_s6",	       750000, 1350000);
+	SAW_VREG_INIT(S6, "8038_s6",	       850000, 1300000);
 
 /* PM8038 regulator constraints */
 struct pm8xxx_regulator_platform_data
@@ -526,7 +526,7 @@ msm8930_pm8038_regulator_pdata[] __devinitdata = {
 static struct rpm_regulator_init_data
 msm8930_rpm_regulator_init_data[] __devinitdata = {
 	/*	ID a_on pd ss min_uV   max_uV  supply sys_uA  freq  fm  ss_fm */
-	RPM_SMPS(S1, 0, 1, 1,  500000, 1250000, NULL, 100000, 4p80, AUTO, LPM),	/*VREG_CORE_V1P15*/
+	RPM_SMPS(S1, 0, 1, 1,  500000, 1150000, NULL, 100000, 4p80, AUTO, LPM),	/*VREG_CORE_V1P15*/
 	RPM_SMPS(S2, 1, 1, 1, 1400000, 1400000, NULL, 100000, 1p60, AUTO, LPM),	/*VREG_S2_V1P4*/
 	RPM_SMPS(S3, 0, 1, 1, 1150000, 1150000, NULL, 100000, 3p20, AUTO, AUTO),/*VREG_S3_V1P15*/
 	RPM_SMPS(S4, 1, 1, 1, 1950000, 2200000, NULL, 100000, 1p60, AUTO, LPM),	/*VREG_S4_V2P2*/
@@ -541,9 +541,9 @@ msm8930_rpm_regulator_init_data[] __devinitdata = {
 	RPM_LDO(L7,	 0, 1, 0, 2050000, 2050000, "8038_s4", 0, 0),	/*VREG_L7_V2P05*/
 	RPM_LDO(L8,	 0, 1, 0, 2800000, 2800000, NULL,      0, 0),	/*VREG_VDD_V2P8*/
 	RPM_LDO(L9,	 1, 1, 0, 2850000, 2850000, NULL,      0, 0),	/*VREG_L9_V2P85*/
-	RPM_LDO(L10,	 0, 1, 0, 2900000, 2900000, NULL,      0, 0),	/*VREG_L10_V3P0*/
+	RPM_LDO(L10,	 0, 1, 0, 2900000, 3000000, NULL,      0, 0),	/*VREG_L10_V3P0*/
 	RPM_LDO(L11,	 1, 1, 0, 1800000, 1800000, "8038_s4", 10000, 10000),	/*VREG_L11_V1P8*/
-	RPM_LDO(L12,	 0, 1, 0, 1200000, 1500000, "8038_s2", 0, 0),	/*VREG_L12_V1P2*/
+	RPM_LDO(L12,	 0, 1, 0, 1200000, 1200000, "8038_s2", 0, 0),	/*VREG_L12_V1P2*/
 	RPM_LDO(L13,	 0, 0, 0, 2220000, 2220000, NULL,      0, 0),
 	RPM_LDO(L14,	 0, 1, 0, 1800000, 1800000, NULL,      0, 0),	/*VREG_PLL2_V1P8*/
 	RPM_LDO(L15,	 0, 1, 0, 1800000, 2950000, NULL,      0, 0),	/*VREG_L15_UIM1*/
@@ -553,7 +553,7 @@ msm8930_rpm_regulator_init_data[] __devinitdata = {
 	RPM_LDO(L21,	 0, 1, 0, 1900000, 1900000, "8038_s4", 0, 0),	/*VREG_A2_V1P9*/
 	RPM_LDO(L22,	 1, 1, 0, 1850000, 2950000, NULL,      10000, 10000),	/*VREG_SDC3_V2P95*/
 	RPM_LDO(L23,	 1, 1, 1, 1800000, 1800000, "8038_s4", 0, 0),	/*VREG_PLL2_V1P8*/
-	RPM_LDO(L24,	 0, 1, 1,  500000, 1250000, "8038_s2", 10000, 10000),	/*VREG_MEM_V1P15*/
+	RPM_LDO(L24,	 0, 1, 1,  500000, 1150000, "8038_s2", 10000, 10000),	/*VREG_MEM_V1P15*/
 	RPM_LDO(L25,	 0, 0, 0, 1740000, 1740000, "8038_l13", 0, 0),
 	RPM_LDO(L26,     1, 1, 0, 1050000, 1050000, "8038_s2", 10000, 10000),	/*VREG_PXO_V1P05*/
 

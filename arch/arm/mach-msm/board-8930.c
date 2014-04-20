@@ -110,6 +110,12 @@
 #include <linux/version_host.h>
 //MTD-BSP-LC-Get_Version-00 +]
 
+//PERI-OH-NFC_Driver_Porting-00+{
+#ifdef CONFIG_PN544_I2C_NFC
+#include <linux/pn544.h>
+#endif /* CONFIG_PN544_I2C_NFC */
+//PERI-OH-NFC_Driver_Porting-00+}
+
 //MTD-BSP-LC-Reserve_Memory-00 +[
 #include <linux/fih_sw_info.h>
 //MTD-BSP-LC-Reserve_Memory-00 +]
@@ -117,37 +123,27 @@
 //MTD-BSP-LC-SMEM-00+[
 #include <linux/fih_hw_info.h>
 //MTD-BSP-LC-SMEM-00+]
-extern void fih_info_init(void); //MTD-BSP-KC-HWID-00
 
 #include <linux/input/synaptics_dsx.h>
-
-//MTD-Peripheral-OwenHuang-NFC_Driver_Porting-00+{
-#ifdef CONFIG_PN544_I2C_NFC
-#include <linux/pn544.h>
-#endif /* CONFIG_PN544_I2C_NFC */
-//MTD-Peripheral-OwenHuang-NFC_Driver_Porting-00+}
 /*MTD-SW3-PERIPHERAL-AC-SENSOR_Porting-00+{*/
-#ifdef CONFIG_SENSETEK_I2C_SENSORS
-#include <linux/stk_i2c_ps31xx.h>
-#endif
-
 #ifdef CONFIG_FIH_GSENSOR_BMA250
 #include <linux/bma250.h>
 #endif
-/*MTD-SW3-PERIPHERAL-AC-SENSOR_Porting-00+}*/
-//MTD-SW3-PERIPHERAL-BJ-LED_Porting-00+{
+
+//PERI-BJ-LED_Porting-00+{
 #ifdef CONFIG_FIH_PWM_LED
 #include <linux/fih_pwm_lib.h>
 #endif
-//MTD-SW3-PERIPHERAL-BJ-LED_Porting-00+}
+//PERI-BJ-LED_Porting-00+}
+
 #ifdef CONFIG_SENSORS_CM36283
 #include <linux/cm36283.h>
 #endif /*CONFIG_SENSORS_CM36283*/
-/*MTD-PERIPHERAL-AC-layout-01+{*/
+
 #ifdef CONFIG_SENSORS_BMM050
 #include <linux/bmm050.h>
 #endif /*CONFIG_SENSORS_BMM050*/
-/*MTD-PERIPHERAL-AC-layout-01+}*/
+/*MTD-SW3-PERIPHERAL-AC-SENSOR_Porting-00+}*/
 
 static struct platform_device msm_fm_platform_init = {
 	.name = "iris_fm",
@@ -219,13 +215,6 @@ struct sx150x_platform_data msm8930_sx150x_data[] = {
 #else
 #define MSM_CONTIG_MEM_SIZE  0x110C000
 #define MSM_ION_HEAP_NUM	1
-#endif
-
-#ifdef CONFIG_CPU_FREQ_GOV_BADASS_2_PHASE
-int set_two_phase_freq_badass(int cpufreq);
-#endif
-#ifdef CONFIG_CPU_FREQ_GOV_BADASS_3_PHASE
-int set_three_phase_freq_badass(int cpufreq);
 #endif
 
 #ifdef CONFIG_KERNEL_MSM_CONTIG_MEM_REGION
@@ -407,8 +396,7 @@ static struct ion_cp_heap_pdata cp_mm_msm8930_ion_pdata = {
 	.reusable = FMEM_ENABLED,
 	.mem_is_fmem = FMEM_ENABLED,
 	.fixed_position = FIXED_MIDDLE,
-/* MM-VH-WFD-DS00* */
-	.is_cma	= 0,
+	.is_cma	= 1,
 	.no_nonsecure_alloc = 1,
 };
 
@@ -435,203 +423,6 @@ static struct ion_co_heap_pdata fw_co_msm8930_ion_pdata = {
 };
 #endif
 
-//MTD-SW3-PERIPHERAL-BJ-LED_Porting-00+{
-#ifdef CONFIG_FIH_PWM_LED
-static struct led_device_data fih_S3A_led_data[] = {
-		/*=====PMIC MPP LPG PIN Group (LPG1~LPG3)=====*/
-#if 0
-		{
-			.name = "sns_blue",
-			.id = 6,
-			.use_hw = LED_HW_PMIC_MPP,
-			.detail = {
-				.pmic_data = {
-					.pmic_pin = PM8038_MPP_PM_TO_SYS(4),
-					.lpg_out  = 0,
-					.on_off_pwm = 250,
-					.blinking_pwm1  = 0,
-                    .blinking_pwm2  = 511,
-                    .pwm_clock      = PM_PWM_CLK_19P2MHZ,
-                    .pwm_div_value  = PM_PWM_PDIV_6,
-                    .pwm_div_exp    = 3,
-                    .blinking_time1 = 500,
-                    .blinking_time2 = 500,
-                    .interval       = 1000,
-                    .toggle_up_down = 1,
-                    .ramp_loop      = 1,
-                    .ramp_up_down   = 1,
-                    .current_sink   = PM_MPP__I_SINK__LEVEL_5mA, 
-                    .use_table      = 1,
-                    .fade_in_out_pwm = 511,
-                    .lut_table_start  = 0,
-                    .lut_table_end = 15,
-				},
-			},
-		},
-
-		{
-			.name = "sns_red",
-			.id = 4,
-			.use_hw = LED_HW_PMIC_MPP,
-			.detail = {
-				.pmic_data = {
-					.pmic_pin = PM8038_MPP_PM_TO_SYS(6),
-					.lpg_out  = 1,
-					.on_off_pwm = 250,
-					.blinking_pwm1  = 0,
-                    .blinking_pwm2  = 511,
-                    .pwm_clock      = PM_PWM_CLK_19P2MHZ,
-                    .pwm_div_value  = PM_PWM_PDIV_6,
-                    .pwm_div_exp    = 3,
-                    .blinking_time1 = 500,
-                    .blinking_time2 = 500,
-                    .interval       = 1000,
-                    .toggle_up_down = 1,
-                    .ramp_loop      = 1,
-                    .ramp_up_down   = 1,
-                    .current_sink   = PM_MPP__I_SINK__LEVEL_5mA, 
-                    .use_table      = 0,
-                    .fade_in_out_pwm =511,
-                    .lut_table_start  = 16,
-                    .lut_table_end  = 31,
-				},
-			},
-		},
-
-		{
-			.name = "sns_green",
-			.id = 5,
-			.use_hw = LED_HW_PMIC_MPP,
-			.detail = {
-				.pmic_data = {
-					.pmic_pin = PM8038_MPP_PM_TO_SYS(3),
-					.lpg_out  = 2,
-					.on_off_pwm = 250,
-					.blinking_pwm1  = 0,
-                    .blinking_pwm2  = 511,
-                    .pwm_clock      = PM_PWM_CLK_19P2MHZ,
-                    .pwm_div_value  = PM_PWM_PDIV_6,
-                    .pwm_div_exp    = 3,
-                    .blinking_time1 = 500,
-                    .blinking_time2 = 500,
-                    .interval       = 1000,
-                    .toggle_up_down = 1,
-                    .ramp_loop      = 1,
-                    .ramp_up_down   = 1,
-                    .current_sink   = PM_MPP__I_SINK__LEVEL_5mA, 
-                    .use_table      = 0,
-                    .fade_in_out_pwm = 511,
-                    .lut_table_start  = 32,
-                    .lut_table_end  = 47,
-				},
-			},
-		},
-#endif
-		/*=====ONLY LPG PIN Group (LPG4~LPG6)=====*/
-//PERI-BJ-ChangeDefaultBlinkingPWM-00+{
-		{
-			.name = "blue",
-			.id = 2,
-			.use_hw = LED_HW_PMIC_LPG,
-			.detail = {
-				.pmic_data = {
-					.pmic_pin = -1, //non-pin
-					.lpg_out  = 3,
-					.on_off_pwm = 250,
-					.blinking_pwm1  = 511,
-                    .blinking_pwm2  = 0,
-                    .pwm_clock      = PM_PWM_CLK_19P2MHZ,
-                    .pwm_div_value  = PM_PWM_PDIV_6,
-                    .pwm_div_exp    = 3,
-                    .blinking_time1 = 500,
-                    .blinking_time2 = 500,
-                    .interval       = 1000,
-                    .toggle_up_down = 1,
-                    .ramp_loop      = 1,
-                    .ramp_up_down   = 1,
-					.current_sink	= RGB_12mA, //PERI-BJ-SetCurrent-00+
-                    .use_table      = 1,
-                    .fade_in_out_pwm = 511,
-                    .lut_table_start  = 16,
-                    .lut_table_end = 31,
-				},
-			},
-		},
-
-		{
-			.name = "green",
-			.id = 1,
-			.use_hw = LED_HW_PMIC_LPG,
-			.detail = {
-				.pmic_data = {
-					.pmic_pin = -1, //non-pin
-					.lpg_out  = 4,
-					.on_off_pwm = 250,
-					.blinking_pwm1  = 511,
-                    .blinking_pwm2  = 0,
-                    .pwm_clock      = PM_PWM_CLK_19P2MHZ,
-                    .pwm_div_value  = PM_PWM_PDIV_6,
-                    .pwm_div_exp    = 3,
-                    .blinking_time1 = 500,
-                    .blinking_time2 = 500,
-                    .interval       = 1000,
-                    .toggle_up_down = 1,
-                    .ramp_loop      = 1,
-                    .ramp_up_down   = 1,
-					.current_sink	= RGB_12mA, //PERI-BJ-SetCurrent-00+
-                    .use_table      = 1,
-                    .fade_in_out_pwm = 511,
-                    .lut_table_start  = 32,
-                    .lut_table_end = 47,
-				},
-			},
-		},
-
-		{
-			.name = "red",
-			.id = 0,
-			.use_hw = LED_HW_PMIC_LPG,
-			.detail = {
-				.pmic_data = {
-					.pmic_pin = -1, //non-pin
-					.lpg_out  = 5,
-					.on_off_pwm = 250,
-					.blinking_pwm1  = 511,
-                    .blinking_pwm2  = 0,
-                    .pwm_clock      = PM_PWM_CLK_19P2MHZ,
-                    .pwm_div_value  = PM_PWM_PDIV_6,
-                    .pwm_div_exp    = 3,
-                    .blinking_time1 = 500,
-                    .blinking_time2 = 500,
-                    .interval       = 1000,
-                    .toggle_up_down = 1,
-                    .ramp_loop      = 1,
-                    .ramp_up_down   = 1,
-					.current_sink	= RGB_12mA, //PERI-BJ-SetCurrent-00+
-                    .use_table      = 1,
-                    .fade_in_out_pwm = 511,
-                    .lut_table_start  = 48,
-                    .lut_table_end = 63,
-				},
-			},
-		},
-};
-//PERI-BJ-ChangeDefaultBlinkingPWM-00+}
-struct leds_device_data	fih_leds_data = {
-	.device_data = fih_S3A_led_data,
-	.count = sizeof(fih_S3A_led_data) / sizeof(*fih_S3A_led_data),
-};
-
-static struct platform_device fih_device_leds = {
-        .name   = "fih_leds",
-        .id     = -1,
-        .dev    =
-        {
-        	.platform_data = &fih_leds_data,
-        },
-};
-#endif
-//MTD-SW3-PERIPHERAL-BJ-LED_Porting-00+}
 
 static u64 msm_dmamask = DMA_BIT_MASK(32);
 
@@ -784,7 +575,7 @@ static void __init msm8930_reserve_fixed_area(unsigned long fixed_area_size)
 #endif
 }
 
-//MTD-Peripheral-OwenHuang-NFC_Driver_Porting-00+[
+//PERI-OH-NFC_Driver_Porting-00+{
 #ifdef CONFIG_PN544_I2C_NFC
 #define PN544_IRQ_GPIO		40
 #define PN544_VEN_GPIO		41
@@ -870,7 +661,7 @@ static struct i2c_board_info pn544_info[] __initdata = {
 	},
 };
 #endif /* CONFIG_PN544_I2C_NFC */
-//MTD-Peripheral-OwenHuang-NFC_Driver_Porting-00+}
+//PERI-OH-NFC_Driver_Porting-00+}
 
 /**
  * Reserve memory for ION and calculate amount of reusable memory for fmem.
@@ -1406,12 +1197,10 @@ static struct msm_bus_paths qseecom_hw_bus_scale_usecases[] = {
 		ARRAY_SIZE(qseecom_clks_init_vectors),
 		qseecom_clks_init_vectors,
 	},
-/* MM-VH-WFD-DS00*[ */
 	{
 		ARRAY_SIZE(qseecom_enable_dfab_vectors),
-		qseecom_enable_dfab_vectors,
+		qseecom_enable_sfpb_vectors,
 	},
-/* MM-VH-WFD-DS00*] */
 	{
 		ARRAY_SIZE(qseecom_enable_sfpb_vectors),
 		qseecom_enable_sfpb_vectors,
@@ -1672,6 +1461,114 @@ static struct mdm_platform_data sglte_platform_data = {
 static struct platform_device *mdm_devices[] __initdata = {
 	&mdm_device,
 };
+
+//PERI-BJ-LED_Porting-00+{
+#ifdef CONFIG_FIH_PWM_LED
+static struct led_device_data fih_S3A_led_data[] = {
+/*=====ONLY LPG PIN Group (LPG4~LPG6)=====*/
+		{
+			.name   = "blue",
+			.id     = 2,
+			.use_hw = LED_HW_PMIC_LPG,
+			.detail = {
+				.pmic_data = {
+					.pmic_pin               = -1, //non-pin
+					.lpg_out                = 3,
+					.on_off_pwm             = 250,
+					.blinking_pwm1          = 511,
+					.blinking_pwm2          = 0,
+					.pwm_clock              = PM_PWM_CLK_19P2MHZ,
+					.pwm_div_value          = PM_PWM_PDIV_6,
+					.pwm_div_exp            = 3,
+					.blinking_time1         = 500,
+					.blinking_time2         = 500,
+					.interval               = 1000,
+					.toggle_up_down         = 1,
+					.ramp_loop              = 1,
+					.ramp_up_down           = 1,
+					.current_sink           = RGB_12mA, //PERI-BJ-SetCurrent-00+
+					.use_table              = 1,
+					.fade_in_out_pwm        = 511,
+					.lut_table_start        = 16,
+					.lut_table_end          = 31,
+				},
+			},
+		},
+
+		{
+			.name   = "green",
+			.id     = 1,
+			.use_hw = LED_HW_PMIC_LPG,
+			.detail = {
+				.pmic_data = {
+					.pmic_pin               = -1, //non-pin
+					.lpg_out                = 4,
+					.on_off_pwm             = 250,
+					.blinking_pwm1          = 511,
+					.blinking_pwm2          = 0,
+					.pwm_clock              = PM_PWM_CLK_19P2MHZ,
+					.pwm_div_value          = PM_PWM_PDIV_6,
+					.pwm_div_exp            = 3,
+					.blinking_time1         = 500,
+					.blinking_time2         = 500,
+					.interval               = 1000,
+					.toggle_up_down         = 1,
+					.ramp_loop              = 1,
+					.ramp_up_down           = 1,
+					.current_sink           = RGB_12mA, //PERI-BJ-SetCurrent-00+
+					.use_table              = 1,
+					.fade_in_out_pwm        = 511,
+					.lut_table_start        = 32,
+					.lut_table_end          = 47,
+				},
+			},
+		},
+
+		{
+			.name   = "red",
+			.id     = 0,
+			.use_hw = LED_HW_PMIC_LPG,
+			.detail = {
+				.pmic_data = {
+					.pmic_pin               = -1, //non-pin
+					.lpg_out                = 5,
+					.on_off_pwm             = 250,
+					.blinking_pwm1          = 511,
+					.blinking_pwm2          = 0,
+					.pwm_clock              = PM_PWM_CLK_19P2MHZ,
+					.pwm_div_value          = PM_PWM_PDIV_6,
+					.pwm_div_exp            = 3,
+					.blinking_time1         = 500,
+					.blinking_time2         = 500,
+					.interval               = 1000,
+					.toggle_up_down         = 1,
+					.ramp_loop              = 1,
+					.ramp_up_down           = 1,
+					.current_sink           = RGB_12mA, //PERI-BJ-SetCurrent-00+
+					.use_table              = 1,
+					.fade_in_out_pwm        = 511,
+					.lut_table_start        = 48,
+					.lut_table_end          = 63,
+				},
+			},
+		},
+};
+
+struct leds_device_data	fih_leds_data = {
+	.device_data = fih_S3A_led_data,
+	.count = sizeof(fih_S3A_led_data) / sizeof(*fih_S3A_led_data),
+};
+
+static struct platform_device fih_device_leds = {
+        .name   = "fih_leds",
+        .id     = -1,
+        .dev    =
+        {
+        	.platform_data = &fih_leds_data,
+        },
+};
+#endif
+//PERI-BJ-LED_Porting-00+}
 
 #ifdef CONFIG_MSM_MPM
 static uint16_t msm_mpm_irqs_m2a[MSM_MPM_NR_MPM_IRQS] __initdata = {
@@ -1984,6 +1881,21 @@ static uint8_t spm_power_collapse_with_rpm[] __initdata = {
 	0x09, 0x07, 0x01, 0x0B,
 	0x10, 0x54, 0x30, 0x0C,
 	0x24, 0x30, 0x0f,
+};
+
+static uint8_t spm_power_collapse_without_rpm_krait_v3[] __initdata = {
+	0x00, 0x30, 0x24, 0x30,
+	0x54, 0x10, 0x09, 0x03,
+	0x01, 0x10, 0x54, 0x30,
+	0x0C, 0x24, 0x30, 0x0f,
+};
+
+static uint8_t spm_power_collapse_with_rpm_krait_v3[] __initdata = {
+	0x00, 0x30, 0x24, 0x30,
+	0x54, 0x10, 0x09, 0x07,
+	0x01, 0x0B, 0x10, 0x54,
+	0x30, 0x0C, 0x24, 0x30,
+	0x0f,
 };
 
 static struct msm_spm_seq_entry msm_spm_boot_cpu_seq_list[] __initdata = {
@@ -2403,7 +2315,7 @@ static struct i2c_board_info mxt_device_info_8930[] __initdata = {
 	},
 };
 
-/*»     Synaptics Thin Driver»  */
+/*?    Synaptics Thin Driver? */
 
 #define CLEARPAD3202_ADDR 0x20
 #define CLEARPAD3202_ATTEN_GPIO (11)
@@ -2431,9 +2343,10 @@ static struct i2c_board_info sii_device_info[] __initdata = {
 	},
 };
 
-/*MTD-SW-PERIPHERAL-AH-KEY-00++[*/
-#ifdef CONFIG_FIH_KEYBOARD_GPIO
 
+/*PERI-AH-Porting GPIO KEY-00++[*/
+#ifdef CONFIG_FIH_KEYBOARD_GPIO
+ 
 #define GPIO_VOLUME_UP         106
 #define GPIO_VOLUME_DOWN       107
 #define GPIO_CAMERA_SNAPSHOT    69
@@ -2447,7 +2360,7 @@ static struct gpio_keys_button the_buttons[] = {
 		.gpio = GPIO_VOLUME_UP,
 		.code = KEY_VOLUMEUP,
 		.desc = "Volume Up",
-		.wakeup	= 1,
+		.wakeup = 1,		
 		.active_low = 1,
 		.debounce_interval = 100
 	},
@@ -2455,7 +2368,7 @@ static struct gpio_keys_button the_buttons[] = {
 		.gpio = GPIO_VOLUME_DOWN,
 		.code = KEY_VOLUMEDOWN,
 		.desc = "Volume Down",
-		.wakeup	= 1,
+		.wakeup = 1,
 		.active_low = 1,
 		.debounce_interval = 100
 	},
@@ -2463,7 +2376,7 @@ static struct gpio_keys_button the_buttons[] = {
 		.gpio = GPIO_CAMERA_FOCUS,
 		.code = KEY_CAMERA_FOCUS,
 		.desc = "Camera Focus",
-		.wakeup	= 0,
+		.wakeup = 0,
 		.active_low = 1,
 		.debounce_interval = 100
 	},
@@ -2471,46 +2384,45 @@ static struct gpio_keys_button the_buttons[] = {
 		.gpio = GPIO_CAMERA_SNAPSHOT,
 		.code = KEY_CAMERA_SNAPSHOT,
 		.desc = "Camera Snapshot",
-		.wakeup	= 1,
+		.wakeup = 1,
 		.active_low = 1,
 		.debounce_interval = 100
 	},
 };
 
 static struct gpio_keys_platform_data the_button_data = {
-	.buttons = the_buttons,
-	.nbuttons = ARRAY_SIZE(the_buttons),
+		.buttons = the_buttons,
+		.nbuttons = ARRAY_SIZE(the_buttons),
 };
 
 static struct platform_device S3A_GPIO_key = {
-	.name   = "fih_gpio-keys",
-	.id     = -1,
-	.dev    = {
-		.platform_data = &the_button_data,
-	},
+		.name   = "fih_gpio-keys",
+		.id     = -1,
+		.dev    = {
+			.platform_data = &the_button_data,
+		},
 };
 
 void __init msm8930_init_key(void)
 {
 	if (gpio_tlmm_config( GPIO_CFG( GPIO_CAMERA_FOCUS, 0, GPIO_CFG_INPUT, GPIO_CFG_PULL_UP, GPIO_CFG_2MA ), GPIO_CFG_ENABLE ))
 		pr_err( "GPIO_CAMERA_FOCUS: gpio_tlmm_config(%d) failed\n", GPIO_CAMERA_FOCUS);
-	
+
 	if (gpio_tlmm_config( GPIO_CFG( GPIO_CAMERA_SNAPSHOT, 0, GPIO_CFG_INPUT, GPIO_CFG_PULL_UP, GPIO_CFG_2MA ), GPIO_CFG_ENABLE ))
 		pr_err( "GPIO_CAMERA_SNAPSHOT: gpio_tlmm_config(%d) failed\n", GPIO_CAMERA_SNAPSHOT);
 
 	if (gpio_tlmm_config( GPIO_CFG( GPIO_VOLUME_UP, 0, GPIO_CFG_INPUT, GPIO_CFG_PULL_UP, GPIO_CFG_2MA ), GPIO_CFG_ENABLE ))
 		pr_err( "GPIO_VOLUME_UP: gpio_tlmm_config(%d) failed\n", GPIO_VOLUME_UP);
-	
+
 	if (gpio_tlmm_config( GPIO_CFG( GPIO_VOLUME_DOWN, 0, GPIO_CFG_INPUT, GPIO_CFG_PULL_UP, GPIO_CFG_2MA ), GPIO_CFG_ENABLE ))
 		pr_err( "GPIO_VOLUME_DOWN: gpio_tlmm_config(%d) failed\n", GPIO_VOLUME_DOWN);
-	
-	/* Setting for S1 boot */
+
+    /* Setting for S1 boot */
 	if (gpio_tlmm_config( GPIO_CFG( GPIO_VOLUME_DOWN_S1, 0, GPIO_CFG_INPUT, GPIO_CFG_PULL_UP, GPIO_CFG_2MA ), GPIO_CFG_ENABLE ))
 		pr_err( "GPIO_VOLUME_DOWN_S1: gpio_tlmm_config(%d) failed\n", GPIO_VOLUME_DOWN_S1);
-	
-	if (gpio_tlmm_config( GPIO_CFG( GPIO_VOLUME_UP_S1, 0, GPIO_CFG_INPUT, GPIO_CFG_PULL_UP, GPIO_CFG_2MA ), GPIO_CFG_ENABLE ))
-		pr_err( "GPIO_VOLUME_UP_S1: gpio_tlmm_config(%d) failed\n", GPIO_VOLUME_UP_S1);		
 
+	if (gpio_tlmm_config( GPIO_CFG( GPIO_VOLUME_UP_S1, 0, GPIO_CFG_INPUT, GPIO_CFG_PULL_UP, GPIO_CFG_2MA ), GPIO_CFG_ENABLE ))
+		pr_err( "GPIO_VOLUME_UP_S1: gpio_tlmm_config(%d) failed\n", GPIO_VOLUME_UP_S1);
 }
 #else
 #ifdef MSM8930_PHASE_2
@@ -2618,26 +2530,23 @@ static struct platform_device gpio_keys_8930 = {
 };
 #endif /* MSM8930_PHASE_2 */
 #endif
-/*MTD-SW-PERIPHERAL-AH-KEY-00++]*/
+/*PERI-AH-Porting GPIO KEY-00++]*/
 
-/*MM-UW-camera preview KPI-00+{*/
 static struct msm_i2c_platform_data msm8960_i2c_qup_gsbi4_pdata = {
 	.clk_freq = 320000, //100000 //400000 /*MM-SL-StreamOnIsEasisyFail-00* */
 	.src_clk_rate = 24000000,
 };
-/*MM-UW-camera preview KPI-00+}*/
+
 static struct msm_i2c_platform_data msm8960_i2c_qup_gsbi3_pdata = {
 	.clk_freq = 400000,
 	.src_clk_rate = 24000000,
 };
 
+#if 0
 static struct msm_i2c_platform_data msm8960_i2c_qup_gsbi8_pdata = {
 	.clk_freq = 100000,
 	.src_clk_rate = 24000000,
 };
-
-/* MTD-BSP-VT-GSBI-00-[ */
-#if 0
 static struct msm_i2c_platform_data msm8960_i2c_qup_gsbi9_pdata = {
 	.clk_freq = 100000,
 	.src_clk_rate = 24000000,
@@ -2648,7 +2557,7 @@ static struct msm_i2c_platform_data msm8960_i2c_qup_gsbi10_pdata = {
 	.src_clk_rate = 24000000,
 };
 #endif
-/* MTD-BSP-VT-GSBI-00-] */
+
 static struct msm_i2c_platform_data msm8960_i2c_qup_gsbi12_pdata = {
 	.clk_freq = 400000,
 	.src_clk_rate = 24000000,
@@ -2711,15 +2620,9 @@ static struct platform_device msm_tsens_device = {
 static struct msm_thermal_data msm_thermal_pdata = {
 	.sensor_id = 9,
 	.poll_ms = 250,
-	.limit_temp_degC = 75,
+	.limit_temp_degC = 60,
 	.temp_hysteresis_degC = 10,
 	.freq_step = 2,
-#ifdef CONFIG_INTELLI_THERMAL
-	.freq_control_mask = 0xf,
-	.core_limit_temp_degC = 80,
-	.core_temp_hysteresis_degC = 10,
-	.core_control_mask = 0xe,
-#endif
 };
 
 #ifdef CONFIG_MSM_FAKE_BATTERY
@@ -2809,7 +2712,7 @@ static struct platform_device *pmic_pm8917_devices[] __initdata = {
 
 static struct platform_device *i2c_qup_devices[] __initdata = {
 	&msm8960_device_qup_i2c_gsbi4,
-	/* &msm8960_device_qup_i2c_gsbi9, */
+	&msm8960_device_qup_i2c_gsbi9,
 };
 
 static struct platform_device *i2c_qup_sglte_devices[] __initdata = {
@@ -2825,7 +2728,7 @@ static struct platform_device *common_devices[] __initdata = {
 	&msm_pil_vidc,
 	&msm8960_device_qup_spi_gsbi1,
 	&msm8960_device_qup_i2c_gsbi3,
-	/* &msm8960_device_qup_i2c_gsbi10,*/ /* MTD-BSP-VT-GSBI-00- */
+	&msm8960_device_qup_i2c_gsbi10,
 	&msm8960_device_qup_i2c_gsbi12,
 	&msm_slim_ctrl,
 	&msm_device_wcnss_wlan,
@@ -2879,7 +2782,7 @@ static struct platform_device *common_devices[] __initdata = {
 	&coresight_etm1_device,
 	&msm_device_dspcrashd_8960,
 	&msm8960_device_watchdog,
-#ifdef CONFIG_FIH_KEYBOARD_GPIO /*MTD-SW-PERIPHERAL-AH-KEY-00++*/
+#ifdef CONFIG_FIH_KEYBOARD_GPIO /*PERI-AH-Porting GPIO KEY-00++*/
 	/*&S3A_GPIO_key,*/
 #else
 #ifdef MSM8930_PHASE_2
@@ -2944,7 +2847,6 @@ static struct platform_device *cdp_devices[] __initdata = {
 
 static void __init msm8930_i2c_init(void)
 {
-/*PERI-AC-I2C-00+{*/
 #if 0
 	int minor_ver = SOCINFO_VERSION_MINOR(socinfo_get_platform_version());
 	int major_ver = SOCINFO_VERSION_MAJOR(socinfo_get_platform_version());
@@ -2962,19 +2864,16 @@ static void __init msm8930_i2c_init(void)
 		}
 	}
 #endif
-/*PERI-AC-I2C-00+}*/
 
 	msm8960_device_qup_i2c_gsbi4.dev.platform_data =
 					&msm8960_i2c_qup_gsbi4_pdata;
 
 	msm8960_device_qup_i2c_gsbi3.dev.platform_data =
 					&msm8960_i2c_qup_gsbi3_pdata;
-
+#if 0
 	if (socinfo_get_platform_subtype() == PLATFORM_SUBTYPE_SGLTE)
 		msm8960_device_qup_i2c_gsbi8.dev.platform_data =
 					&msm8960_i2c_qup_gsbi8_pdata;
-/* MTD-BSP-VT-GSBI-00-[ */
-#if 0 					
 	else
 		msm8960_device_qup_i2c_gsbi9.dev.platform_data =
 					&msm8960_i2c_qup_gsbi9_pdata;
@@ -2982,7 +2881,6 @@ static void __init msm8930_i2c_init(void)
 	msm8960_device_qup_i2c_gsbi10.dev.platform_data =
 					&msm8960_i2c_qup_gsbi10_pdata;
 #endif
-/* MTD-BSP-VT-GSBI-00-] */
 
 	msm8960_device_qup_i2c_gsbi12.dev.platform_data =
 					&msm8960_i2c_qup_gsbi12_pdata;
@@ -3087,7 +2985,7 @@ static struct msm_rpmrs_platform_data msm_rpmrs_data_pm8917 __initdata = {
 		[MSM_RPMRS_VDD_MEM_RET_LOW]	= 750000,
 		[MSM_RPMRS_VDD_MEM_RET_HIGH]	= 750000,
 		[MSM_RPMRS_VDD_MEM_ACTIVE]	= 1050000,
-		[MSM_RPMRS_VDD_MEM_MAX]		= 1250000,
+		[MSM_RPMRS_VDD_MEM_MAX]		= 1150000,
 	},
 	.vdd_dig_levels = {
 		[MSM_RPMRS_VDD_DIG_RET_LOW]	= 0,
@@ -3274,6 +3172,13 @@ static struct i2c_board_info rmi4_info_DP[] __initdata =
      },
 };
 
+#ifdef CONFIG_BMP18X_I2C
+static struct i2c_board_info __initdata bmp18x_i2c_boardinfo[] = {
+	{
+		I2C_BOARD_INFO("bmp18x", 0x77),
+	},
+};
+#endif
 /*MTD-SW3-PERIPHERAL-AC-SENSOR_Porting-00+{*/
 #ifdef CONFIG_FIH_GSENSOR_BMA250
 static int bma250_gpio_init(void)
@@ -3303,31 +3208,6 @@ static struct bma250_platform_data bma250_platform_data = {
 };
 #endif /*CONFIG_FIH_GSENSOR_BMA250*/
 
-#ifdef CONFIG_SENSETEK_I2C_SENSORS
-static int stk_gpio_init(void)
-{
-    int ALPS_OUT = EINT_GPIO;
-    if (gpio_request(ALPS_OUT, "EINT"))
-    {
-        PSENSOR_DEBUG(LEVEL0, "Request GPIO(%d) failed.", ALPS_OUT);
-        return -EIO;
-    }
-    if (gpio_tlmm_config(GPIO_CFG(ALPS_OUT, 0, GPIO_CFG_INPUT, GPIO_CFG_NO_PULL, GPIO_CFG_2MA), GPIO_CFG_ENABLE))
-    {
-        PSENSOR_DEBUG(LEVEL0, "Config GPIO(%d) failed.", ALPS_OUT);
-        return -EIO;
-    }
-    gpio_direction_input(ALPS_OUT);
-
-    PSENSOR_DEBUG(LEVEL0, "GPIO(%d) Done.", ALPS_OUT);
-    return 0;
-}
-
-static struct stk3171_platform_data stk3171_platform_data = {
-    .gpio_init = stk_gpio_init,
-    .sensitivity = 0,
-};
-#endif /*CONFIG_SENSETEK_I2C_SENSORS*/
 
 #ifdef CONFIG_SENSORS_CM36283
 
@@ -3376,21 +3256,13 @@ static struct bmm050_platform_data bmm050_pdata = {
 
 #ifdef CONFIG_FIH_SENSOR
 static struct i2c_board_info __initdata sensors_i2c_boardinfo[] = {
-#ifdef CONFIG_SENSETEK_I2C_SENSORS
+#ifdef CONFIG_FIH_GSENSOR_BMA250
 	{
-		I2C_BOARD_INFO("stk_ps", 0x90>>1),
-		.platform_data = &stk3171_platform_data,
-		.irq = MSM_GPIO_TO_INT(EINT_GPIO),
+		I2C_BOARD_INFO(GSENSOR_NAME, 0x18),
+		.platform_data = &bma250_platform_data,
+		.irq = MSM_GPIO_TO_INT(GPIO_GS_INT),
 	},
 #endif
-
-#ifdef CONFIG_SENSORS_CM36283
-	{
-		I2C_BOARD_INFO(CM36283_I2C_NAME, CM36283_slave_add),
-		.platform_data = &cm36283_pdata,
-		.irq = MSM_GPIO_TO_INT(CM36283_PS_INT_N),
-	},
-#endif /*CONFIG_SENSORS_CM36283*/
 
 #ifdef CONFIG_SENSORS_BMM050
 	{
@@ -3401,23 +3273,17 @@ static struct i2c_board_info __initdata sensors_i2c_boardinfo[] = {
 	},
 #endif /*CONFIG_SENSORS_BMM050*/
 
-#ifdef CONFIG_FIH_GSENSOR_BMA250
+#ifdef CONFIG_SENSORS_CM36283
 	{
-		I2C_BOARD_INFO(GSENSOR_NAME, 0x18),
-		.platform_data = &bma250_platform_data,
-		.irq = MSM_GPIO_TO_INT(GPIO_GS_INT),
+		I2C_BOARD_INFO(CM36283_I2C_NAME, CM36283_slave_add),
+		.platform_data = &cm36283_pdata,
+		.irq = MSM_GPIO_TO_INT(CM36283_PS_INT_N),
 	},
-#endif
+#endif /*CONFIG_SENSORS_CM36283*/
+
 };
 #endif/*CONFIG_FIH_SENSOR*/
 /*MTD-SW3-PERIPHERAL-AC-SENSOR_Porting-00+}*/
-#ifdef CONFIG_BMP18X_I2C
-static struct i2c_board_info __initdata bmp18x_i2c_boardinfo[] = {
-	{
-		I2C_BOARD_INFO("bmp18x", 0x77),
-	},
-};
-#endif
 
 static struct i2c_registry msm8960_i2c_devices[] __initdata = {
 #ifdef CONFIG_ISL9519_CHARGER
@@ -3454,6 +3320,32 @@ static struct i2c_registry msm8960_i2c_devices[] __initdata = {
 		sii_device_info,
 		ARRAY_SIZE(sii_device_info),
 	},
+#ifdef CONFIG_STM_LIS3DH
+	{
+		I2C_FFA | I2C_FLUID | I2C_EVT,
+		MSM_8930_GSBI12_QUP_I2C_BUS_ID,
+		lis3dh_i2c_boardinfo,
+		ARRAY_SIZE(lis3dh_i2c_boardinfo),
+	},
+#endif
+//PERI-OH-NFC_Driver_Porting-00+{
+#ifdef CONFIG_PN544_I2C_NFC
+	{
+		I2C_SURF | I2C_FFA | I2C_LIQUID | I2C_FLUID,
+		MSM_8930_GSBI12_QUP_I2C_BUS_ID,
+		pn544_info,
+		ARRAY_SIZE(pn544_info),
+	},
+#endif /* CONFIG_PN544_I2C_NFC */
+//PERI-OH-NFC_Driver_Porting-00+}
+#ifdef CONFIG_BMP18X_I2C
+	{
+		I2C_FFA | I2C_FLUID | I2C_EVT,
+		MSM_8930_GSBI12_QUP_I2C_BUS_ID,
+		bmp18x_i2c_boardinfo,
+		ARRAY_SIZE(bmp18x_i2c_boardinfo),
+	},
+#endif
 /*MTD-SW3-PERIPHERAL-AC-SENSOR_Porting-00+{*/
 #ifdef CONFIG_FIH_SENSOR
 	{
@@ -3464,33 +3356,6 @@ static struct i2c_registry msm8960_i2c_devices[] __initdata = {
 	},
 #endif /*CONFIG_FIH_SENSOR*/
 /*MTD-SW3-PERIPHERAL-AC-SENSOR_Porting-00+}*/
-//MTD-Peripheral-OwenHuang-NFC_Driver_Porting-00+{
-#ifdef CONFIG_PN544_I2C_NFC
-	{
-		I2C_SURF | I2C_FFA | I2C_LIQUID | I2C_FLUID,
-		MSM_8930_GSBI12_QUP_I2C_BUS_ID,
-		pn544_info,
-		ARRAY_SIZE(pn544_info),
-	},
-#endif /* CONFIG_PN544_I2C_NFC */
-//MTD-Peripheral-OwenHuang-NFC_Driver_Porting-00+}
-#ifdef CONFIG_STM_LIS3DH
-	{
-		I2C_FFA | I2C_FLUID | I2C_EVT,
-		MSM_8930_GSBI12_QUP_I2C_BUS_ID,
-		lis3dh_i2c_boardinfo,
-		ARRAY_SIZE(lis3dh_i2c_boardinfo),
-	},
-#endif
-#ifdef CONFIG_BMP18X_I2C
-	{
-		I2C_FFA | I2C_FLUID | I2C_EVT,
-		MSM_8930_GSBI12_QUP_I2C_BUS_ID,
-		bmp18x_i2c_boardinfo,
-		ARRAY_SIZE(bmp18x_i2c_boardinfo),
-	},
-#endif
-
 
 };
 #endif /* CONFIG_I2C */
@@ -3600,7 +3465,12 @@ static void __init register_i2c_devices(void)
 		struct i2c_board_info *info;
 		int	bus, size;
 
-		gpio_tlmm_config( GPIO_CFG( 78, 0, GPIO_CFG_INPUT, GPIO_CFG_NO_PULL, GPIO_CFG_2MA ), GPIO_CFG_ENABLE );
+		//PERI-OH-Fix_Coverity_#76046-00*{
+		if (gpio_tlmm_config( GPIO_CFG( 78, 0, GPIO_CFG_INPUT, GPIO_CFG_NO_PULL, GPIO_CFG_2MA ), GPIO_CFG_ENABLE))
+		{
+			printk(KERN_ERR "Config GPIO_78 error!\n");
+		}
+		//PERI-OH-Fix_Coverity_#76046-00*}
 
 		switch( fih_get_product_phase () )
 		{
@@ -3653,10 +3523,10 @@ static void __init msm8930_pm8917_pdata_fixup(void)
 
 	mhl_platform_data.gpio_mhl_power = MHL_POWER_GPIO_PM8917;
 
-#ifndef CONFIG_FIH_KEYBOARD_GPIO /*MTD-SW-PERIPHERAL-AH-KEY-00++*/
+#ifndef CONFIG_FIH_KEYBOARD_GPIO /*PERI-AH-Porting GPIO KEY-00++*/
 	gpio_keys_8930_pdata.buttons = keys_8930_pm8917;
 	gpio_keys_8930_pdata.nbuttons = ARRAY_SIZE(keys_8930_pm8917);
-#endif
+#endif	
 
 	msm_device_saw_core0.dev.platform_data
 		= &msm8930_pm8038_saw_regulator_core0_pdata;
@@ -3672,20 +3542,28 @@ static void __init msm8930_pm8917_pdata_fixup(void)
 	pdata = msm8930ab_device_acpuclk.dev.platform_data;
 	pdata->uses_pm8917 = true;
 }
+static void __init msm8930ab_update_krait_spm(void)
+ {
+	int i;
 
-//MTD-BSP-LC-Get_Version-00 +[
-void fih_get_host_version(void)
-{
-    char   fih_host_version[30];
-    snprintf(fih_host_version, 30, "%s.%s.%s.%s\n",
-        VER_HOST_BSP_VERSION,
-        VER_HOST_PLATFORM_NUMBER,
-        VER_HOST_BRANCH_NUMBER,
-        VER_HOST_BUILD_NUMBER);
 
-    printk(KERN_ERR "FIH kernel : HOST Version = %s \r\n",fih_host_version);
+	/* Update the SPM sequences for SPC and PC */
+	for (i = 0; i < ARRAY_SIZE(msm_spm_data); i++) {
+		int j;
+		struct msm_spm_platform_data *pdata = &msm_spm_data[i];
+		for (j = 0; j < pdata->num_modes; j++) {
+			if (pdata->modes[j].cmd ==
+					spm_power_collapse_without_rpm)
+				pdata->modes[j].cmd =
+				spm_power_collapse_without_rpm_krait_v3;
+			else if (pdata->modes[j].cmd ==
+					spm_power_collapse_with_rpm)
+				pdata->modes[j].cmd =
+				spm_power_collapse_with_rpm_krait_v3;
+		}
+	}
 }
-//MTD-BSP-LC-Get_Version-00 +]
+
 
 static void __init msm8930ab_update_retention_spm(void)
 {
@@ -3716,6 +3594,21 @@ static struct msm_serial_hs_platform_data msm_uart_dm9_pdata = {
 static struct msm_serial_hs_platform_data msm_uart_dm9_pdata;
 #endif
 
+//MTD-BSP-LC-Get_Version-00 +[
+void fih_get_host_version(void)
+{
+    char   fih_host_version[30];
+    snprintf(fih_host_version, 30, "%s.%s.%s.%s\n",
+		VER_HOST_BSP_VERSION,
+		VER_HOST_PLATFORM_NUMBER,
+		VER_HOST_BRANCH_NUMBER, 
+		VER_HOST_BUILD_NUMBER);
+    
+    printk(KERN_ERR "FIH kernel : HOST Version = %s \r\n",fih_host_version);
+    
+}
+//MTD-BSP-LC-Get_Version-00 +]
+
 static void __init msm8930_cdp_init(void)
 {
 	int i, reg_size = 0;
@@ -3725,9 +3618,10 @@ static void __init msm8930_cdp_init(void)
 		msm8930_pm8917_pdata_fixup();
 	if (meminfo_init(SYS_MEMORY, SZ_256M) < 0)
 		pr_err("meminfo_init() failed!\n");
-
+		
 	msm_smd_init();    //MTD-BSP-LC-SMEM-01 +
 	fih_get_host_version();    //MTD-BSP-LC-Get_Version-00 +
+	
 
 	platform_device_register(&msm_gpio_device);
 	msm_tsens_early_init(&msm_tsens_pdata);
@@ -3740,7 +3634,12 @@ static void __init msm8930_cdp_init(void)
 		BUG_ON(msm_rpmrs_levels_init(&msm_rpmrs_data_pm8917));
 	}
 
-	if (machine_is_msm8930_evt())
+	/*
+	 * Configure LDO L17 as away on only for EVT1,
+	 * because it is the power source for a set of
+	 * MSM gpios on 8930 SGLTE EVT1.
+	 */
+	if (machine_is_msm8930_evt() && major_ver == 1 && minor_ver == 0)
 		configure_8930_sglte_regulator();
 
 	regulator_suppress_info_printing();
@@ -3817,6 +3716,8 @@ static void __init msm8930_cdp_init(void)
 #endif
 	msm8930_i2c_init();
 	msm8930_init_gpu();
+	if (cpu_is_msm8930ab())
+		msm8930ab_update_krait_spm();
 	if (cpu_is_krait_v3()) {
 		msm_pm_set_tz_retention_flag(0);
 		msm8930ab_update_retention_spm();
@@ -3889,7 +3790,9 @@ static void __init msm8930_cdp_init(void)
 	else
 		msm8930_pm8917_gpio_mpp_init();
 #endif
-	fih_hwid_read();//MTD-BSP-KC-HWID-01+
+
+	fih_hwid_read(); //MTD-BSP-KC-HWID-00+
+
 	platform_add_devices(cdp_devices, ARRAY_SIZE(cdp_devices));
 #ifdef CONFIG_MSM_CAMERA
 	msm8930_init_cam();
@@ -3940,23 +3843,23 @@ static void __init msm8930_cdp_init(void)
 #endif
 /* FIH-SW3-KERNEL-TH-add_last_alog-00+] */
 
-//MTD-SW3-PERIPHERAL-BJ-LED_Porting-00+{
-#ifdef CONFIG_FIH_PWM_LED
-	platform_device_register(&fih_device_leds);
-#endif
-//MTD-SW3-PERIPHERAL-BJ-LED_Porting-00+}
-
-
 
 	if (PLATFORM_IS_CHARM25())
 		platform_add_devices(mdm_devices, ARRAY_SIZE(mdm_devices));
 
-/*MTD-SW-PERIPHERAL-AH-KEY-00++[*/
-#ifdef CONFIG_FIH_KEYBOARD_GPIO
-	msm8930_init_key();
-	platform_device_register( &S3A_GPIO_key );
+	/*PERI-AH-Porting GPIO KEY-00++[*/
+	#ifdef CONFIG_FIH_KEYBOARD_GPIO
+		msm8930_init_key();
+		platform_device_register( &S3A_GPIO_key );
+	#endif
+	/*PERI-AH-Porting GPIO KEY-00++]*/	
+
+//PERI-BJ-LED_Porting-00+{
+#ifdef CONFIG_FIH_PWM_LED
+	platform_device_register(&fih_device_leds);
 #endif
-/*MTD-SW-PERIPHERAL-AH-KEY-00++]*/
+//PERI-BJ-LED_Porting-00+}
+
 }
 
 MACHINE_START(MSM8930_CDP, "QCT MSM8930 CDP")
