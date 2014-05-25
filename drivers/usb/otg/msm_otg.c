@@ -43,10 +43,6 @@
 #include <linux/mhl_8334.h>
 #include <linux/slimport.h>
 
-#ifdef CONFIG_PM8921_CHARGER_CONTROL
-#include <linux/pm8921_chg_ctrl.h>
-#endif
-
 #include <asm/mach-types.h>
 
 #include <mach/clk.h>
@@ -1157,11 +1153,8 @@ static void msm_otg_notify_charger(struct msm_otg *motg, unsigned mA)
 
 	if (motg->cur_power == mA)
 		return;
-	#ifdef CONFIG_PM8921_CHARGER_CONTROL
-	dev_info(motg->phy.dev, "Avail curr from USB = %u But using custom current = %d\n", mA, usb_curr_val);
-	#else
+
 	dev_info(motg->phy.dev, "Avail curr from USB = %u\n", mA);
-	#endif
 
 #ifdef CONFIG_FORCE_FAST_CHARGE
 	if (force_fast_charge == 1) {
@@ -1184,19 +1177,9 @@ static void msm_otg_notify_charger(struct msm_otg *motg, unsigned mA)
 	 *  to legacy pm8921 API.
 	 */
 	if (msm_otg_notify_power_supply(motg, mA))
-		pm8921_charger_vbus_draw(
-		#ifdef CONFIG_PM8921_CHARGER_CONTROL
-		usb_curr_val);
-		#else
-		mA);
-		#endif
-		
-#ifdef CONFIG_PM8921_CHARGER_CONTROL
-	reg_curr = motg->cur_power;
-	motg->cur_power = usb_curr_val;
-#else
+		pm8921_charger_vbus_draw(mA);
+
 	motg->cur_power = mA;
-#endif
 }
 
 static int msm_otg_set_power(struct usb_phy *phy, unsigned mA)
@@ -2116,9 +2099,6 @@ static void msm_ta_detect_work(struct work_struct *w)
 		motg->chg_state = USB_CHG_STATE_DETECTED;
 		motg->chg_type = USB_DCP_CHARGER;
 		motg->cur_power = 0;
-#ifdef CONFIG_PM8921_CHARGER_CONTROL
-		reg_curr = motg->cur_power;
-#endif
 		msm_otg_start_peripheral(otg, 0);
 		otg->phy->state = OTG_STATE_B_IDLE;
 		schedule_work(&motg->sm_work);
