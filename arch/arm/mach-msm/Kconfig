@@ -1659,6 +1659,14 @@ config PM8921_CHARGER_CONTROL
 	help
 		Exposes sysfs controls for various charging currents
 
+config TURBO_BOOST
+	bool "Enable CPU Turbo boost option"
+	default y
+	help
+	  This option allows overclocking of 2 cores to higher clock rate
+	  than stock maximum.  When more than 2 cores are active, the clock
+	  is limited to stock max speeds
+
 config MSM_AVS_HW
 	bool "Enable Adaptive Voltage Scaling (AVS)"
 	default n
