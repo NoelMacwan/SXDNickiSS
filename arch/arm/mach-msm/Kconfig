@@ -1647,13 +1647,6 @@ config MSM_CPUFREQ_LIMITER
 
 endif # CPU_FREQ_MSM
 
-<<<<<<< HEAD
-config PM8921_CHARGER_CONTROL
-	bool "Charger current control driver for PM8921 type hardware"
-	default n
-	help
-		Exposes sysfs controls for various charging currents
-
 config TURBO_BOOST
 	bool "Enable CPU Turbo boost option"
 	default y
@@ -1662,8 +1655,6 @@ config TURBO_BOOST
 	  than stock maximum.  When more than 2 cores are active, the clock
 	  is limited to stock max speeds
 
-=======
->>>>>>> parent of f11e16b... nicki: initial bringup: PM8921-Charger Control 1.0 , thanks to @varunchitre15
 config MSM_AVS_HW
 	bool "Enable Adaptive Voltage Scaling (AVS)"
 	default n
