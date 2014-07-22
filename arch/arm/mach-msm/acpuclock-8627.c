@@ -95,8 +95,8 @@ static struct msm_bus_scale_pdata bus_scale_data __initdata = {
 };
 
 static struct l2_level l2_freq_tbl[] __initdata = {
-	[0]  = { {  384000, PLL_8, 0, 0x00 },  LVL_LOW, 1050000, 1 },
-	[1]  = { {  384000, PLL_8, 0, 0x00 },  LVL_LOW, 1050000, 1 },
+	[0]  = { {  162000, PLL_8, 0, 0x00 },  LVL_LOW, 1050000, 1 },
+	[1]  = { {  384000, HFPLL, 0, 0x08 },  LVL_LOW, 1050000, 1 },
 	[2]  = { {  432000, HFPLL, 2, 0x20 },  LVL_NOM, 1050000, 1 },
 	[3]  = { {  486000, HFPLL, 2, 0x24 },  LVL_NOM, 1050000, 1 },
 	[4]  = { {  540000, HFPLL, 2, 0x28 },  LVL_NOM, 1050000, 2 },
@@ -133,7 +133,7 @@ static struct acpu_level acpu_freq_tbl[] __initdata = {
 	{ 1, {   864000, HFPLL, 1, 0x20 }, L2(11), 1062500 },
 	{ 1, {   918000, HFPLL, 1, 0x22 }, L2(11), 1087500 },
 	{ 1, {   972000, HFPLL, 1, 0x24 }, L2(11), 1100000 },
-	{ 1, {  1026000, HFPLL, 1, 0x26 }, L2(11),  1125000 },
+	{ 1, {  1026000, HFPLL, 1, 0x26 }, L2(11), 1125000 },
 	{ 1, {  1134000, HFPLL, 1, 0x2A }, L2(16), 1175000 },
 	{ 1, {  1242000, HFPLL, 1, 0x2E }, L2(16), 1200000 },
 	{ 1, {  1350000, HFPLL, 1, 0x32 }, L2(16), 1225000 },
