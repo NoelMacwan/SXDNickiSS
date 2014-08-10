@@ -21,20 +21,31 @@ static struct bfq_entity *bfq_lookup_next_entity(struct bfq_sched_data *sd,
 						 int extract,
 						 struct bfq_data *bfqd);
 
+<<<<<<< HEAD
 static inline void bfq_update_budget(struct bfq_entity *next_in_service)
+=======
+static inline void bfq_update_budget(struct bfq_entity *next_active)
+>>>>>>> d40384a... bfq is here
 {
 	struct bfq_entity *bfqg_entity;
 	struct bfq_group *bfqg;
 	struct bfq_sched_data *group_sd;
 
+<<<<<<< HEAD
 	BUG_ON(next_in_service == NULL);
 
 	group_sd = next_in_service->sched_data;
+=======
+	BUG_ON(next_active == NULL);
+
+	group_sd = next_active->sched_data;
+>>>>>>> d40384a... bfq is here
 
 	bfqg = container_of(group_sd, struct bfq_group, sched_data);
 	/*
 	 * bfq_group's my_entity field is not NULL only if the group
 	 * is not the root group. We must not touch the root entity
+<<<<<<< HEAD
 	 * as it must never become an in-service entity.
 	 */
 	bfqg_entity = bfqg->my_entity;
@@ -47,6 +58,20 @@ static int bfq_update_next_in_service(struct bfq_sched_data *sd)
 	struct bfq_entity *next_in_service;
 
 	if (sd->in_service_entity != NULL)
+=======
+	 * as it must never become an active entity.
+	 */
+	bfqg_entity = bfqg->my_entity;
+	if (bfqg_entity != NULL)
+		bfqg_entity->budget = next_active->budget;
+}
+
+static int bfq_update_next_active(struct bfq_sched_data *sd)
+{
+	struct bfq_entity *next_active;
+
+	if (sd->active_entity != NULL)
+>>>>>>> d40384a... bfq is here
 		/* will update/requeue at the end of service */
 		return 0;
 
@@ -57,19 +82,34 @@ static int bfq_update_next_in_service(struct bfq_sched_data *sd)
 	 * next from this subtree.  By now we worry more about
 	 * correctness than about performance...
 	 */
+<<<<<<< HEAD
 	next_in_service = bfq_lookup_next_entity(sd, 0, NULL);
 	sd->next_in_service = next_in_service;
 
 	if (next_in_service != NULL)
 		bfq_update_budget(next_in_service);
+=======
+	next_active = bfq_lookup_next_entity(sd, 0, NULL);
+	sd->next_active = next_active;
+
+	if (next_active != NULL)
+		bfq_update_budget(next_active);
+>>>>>>> d40384a... bfq is here
 
 	return 1;
 }
 
+<<<<<<< HEAD
 static inline void bfq_check_next_in_service(struct bfq_sched_data *sd,
 					     struct bfq_entity *entity)
 {
 	BUG_ON(sd->next_in_service != entity);
+=======
+static inline void bfq_check_next_active(struct bfq_sched_data *sd,
+					 struct bfq_entity *entity)
+{
+	BUG_ON(sd->next_active != entity);
+>>>>>>> d40384a... bfq is here
 }
 #else
 #define for_each_entity(entity)	\
@@ -78,17 +118,30 @@ static inline void bfq_check_next_in_service(struct bfq_sched_data *sd,
 #define for_each_entity_safe(entity, parent) \
 	for (parent = NULL; entity != NULL; entity = parent)
 
+<<<<<<< HEAD
 static inline int bfq_update_next_in_service(struct bfq_sched_data *sd)
+=======
+static inline int bfq_update_next_active(struct bfq_sched_data *sd)
+>>>>>>> d40384a... bfq is here
 {
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline void bfq_check_next_in_service(struct bfq_sched_data *sd,
 					     struct bfq_entity *entity)
 {
 }
 
 static inline void bfq_update_budget(struct bfq_entity *next_in_service)
+=======
+static inline void bfq_check_next_active(struct bfq_sched_data *sd,
+					 struct bfq_entity *entity)
+{
+}
+
+static inline void bfq_update_budget(struct bfq_entity *next_active)
+>>>>>>> d40384a... bfq is here
 {
 }
 #endif
@@ -640,7 +693,11 @@ static void __bfq_activate_entity(struct bfq_entity *entity)
 	struct bfq_sched_data *sd = entity->sched_data;
 	struct bfq_service_tree *st = bfq_entity_service_tree(entity);
 
+<<<<<<< HEAD
 	if (entity == sd->in_service_entity) {
+=======
+	if (entity == sd->active_entity) {
+>>>>>>> d40384a... bfq is here
 		BUG_ON(entity->tree != NULL);
 		/*
 		 * If we are requeueing the current entity we have
@@ -649,12 +706,21 @@ static void __bfq_activate_entity(struct bfq_entity *entity)
 		 */
 		bfq_calc_finish(entity, entity->service);
 		entity->start = entity->finish;
+<<<<<<< HEAD
 		sd->in_service_entity = NULL;
 	} else if (entity->tree == &st->active) {
 		/*
 		 * Requeueing an entity due to a change of some
 		 * next_in_service entity below it.  We reuse the
 		 * old start time.
+=======
+		sd->active_entity = NULL;
+	} else if (entity->tree == &st->active) {
+		/*
+		 * Requeueing an entity due to a change of some
+		 * next_active entity below it.  We reuse the old
+		 * start time.
+>>>>>>> d40384a... bfq is here
 		 */
 		bfq_active_extract(st, entity);
 	} else if (entity->tree == &st->idle) {
@@ -698,11 +764,19 @@ static void bfq_activate_entity(struct bfq_entity *entity)
 		__bfq_activate_entity(entity);
 
 		sd = entity->sched_data;
+<<<<<<< HEAD
 		if (!bfq_update_next_in_service(sd))
 			/*
 			 * No need to propagate the activation to the
 			 * upper entities, as they will be updated when
 			 * the in-service entity is rescheduled.
+=======
+		if (!bfq_update_next_active(sd))
+			/*
+			 * No need to propagate the activation to the
+			 * upper entities, as they will be updated when
+			 * the active entity is rescheduled.
+>>>>>>> d40384a... bfq is here
 			 */
 			break;
 	}
@@ -719,24 +793,40 @@ static void bfq_activate_entity(struct bfq_entity *entity)
  * and if the caller did not specify @requeue, put it on the idle tree.
  *
  * Return %1 if the caller should update the entity hierarchy, i.e.,
+<<<<<<< HEAD
  * if the entity was under service or if it was the next_in_service for
+=======
+ * if the entity was under service or if it was the next_active for
+>>>>>>> d40384a... bfq is here
  * its sched_data; return %0 otherwise.
  */
 static int __bfq_deactivate_entity(struct bfq_entity *entity, int requeue)
 {
 	struct bfq_sched_data *sd = entity->sched_data;
 	struct bfq_service_tree *st = bfq_entity_service_tree(entity);
+<<<<<<< HEAD
 	int was_in_service = entity == sd->in_service_entity;
+=======
+	int was_active = entity == sd->active_entity;
+>>>>>>> d40384a... bfq is here
 	int ret = 0;
 
 	if (!entity->on_st)
 		return 0;
 
+<<<<<<< HEAD
 	BUG_ON(was_in_service && entity->tree != NULL);
 
 	if (was_in_service) {
 		bfq_calc_finish(entity, entity->service);
 		sd->in_service_entity = NULL;
+=======
+	BUG_ON(was_active && entity->tree != NULL);
+
+	if (was_active) {
+		bfq_calc_finish(entity, entity->service);
+		sd->active_entity = NULL;
+>>>>>>> d40384a... bfq is here
 	} else if (entity->tree == &st->active)
 		bfq_active_extract(st, entity);
 	else if (entity->tree == &st->idle)
@@ -744,16 +834,26 @@ static int __bfq_deactivate_entity(struct bfq_entity *entity, int requeue)
 	else if (entity->tree != NULL)
 		BUG();
 
+<<<<<<< HEAD
 	if (was_in_service || sd->next_in_service == entity)
 		ret = bfq_update_next_in_service(sd);
+=======
+	if (was_active || sd->next_active == entity)
+		ret = bfq_update_next_active(sd);
+>>>>>>> d40384a... bfq is here
 
 	if (!requeue || !bfq_gt(entity->finish, st->vtime))
 		bfq_forget_entity(st, entity);
 	else
 		bfq_idle_insert(st, entity);
 
+<<<<<<< HEAD
 	BUG_ON(sd->in_service_entity == entity);
 	BUG_ON(sd->next_in_service == entity);
+=======
+	BUG_ON(sd->active_entity == entity);
+	BUG_ON(sd->next_active == entity);
+>>>>>>> d40384a... bfq is here
 
 	return ret;
 }
@@ -779,7 +879,11 @@ static void bfq_deactivate_entity(struct bfq_entity *entity, int requeue)
 			 */
 			break;
 
+<<<<<<< HEAD
 		if (sd->next_in_service != NULL)
+=======
+		if (sd->next_active != NULL)
+>>>>>>> d40384a... bfq is here
 			/*
 			 * The parent entity is still backlogged and
 			 * the budgets on the path towards the root
@@ -802,7 +906,11 @@ update:
 		__bfq_activate_entity(entity);
 
 		sd = entity->sched_data;
+<<<<<<< HEAD
 		if (!bfq_update_next_in_service(sd))
+=======
+		if (!bfq_update_next_active(sd))
+>>>>>>> d40384a... bfq is here
 			break;
 	}
 }
@@ -833,8 +941,12 @@ static void bfq_update_vtime(struct bfq_service_tree *st)
 }
 
 /**
+<<<<<<< HEAD
  * bfq_first_active_entity - find the eligible entity with
  *                           the smallest finish time
+=======
+ * bfq_first_active - find the eligible entity with the smallest finish time
+>>>>>>> d40384a... bfq is here
  * @st: the service tree to select from.
  *
  * This function searches the first schedulable entity, starting from the
@@ -883,7 +995,11 @@ left:
 static struct bfq_entity *__bfq_lookup_next_entity(struct bfq_service_tree *st,
 						   bool force)
 {
+<<<<<<< HEAD
 	struct bfq_entity *entity, *new_next_in_service = NULL;
+=======
+	struct bfq_entity *entity, *new_next_active = NULL;
+>>>>>>> d40384a... bfq is here
 
 	if (RB_EMPTY_ROOT(&st->active))
 		return NULL;
@@ -894,6 +1010,7 @@ static struct bfq_entity *__bfq_lookup_next_entity(struct bfq_service_tree *st,
 
 	/*
 	 * If the chosen entity does not match with the sched_data's
+<<<<<<< HEAD
 	 * next_in_service and we are forcedly serving the IDLE priority
 	 * class tree, bubble up budget update.
 	 */
@@ -901,6 +1018,15 @@ static struct bfq_entity *__bfq_lookup_next_entity(struct bfq_service_tree *st,
 		new_next_in_service = entity;
 		for_each_entity(new_next_in_service)
 			bfq_update_budget(new_next_in_service);
+=======
+	 * next_active and we are forcedly serving the IDLE priority
+	 * class tree, bubble up budget update.
+	 */
+	if (unlikely(force && entity != entity->sched_data->next_active)) {
+		new_next_active = entity;
+		for_each_entity(new_next_active)
+			bfq_update_budget(new_next_active);
+>>>>>>> d40384a... bfq is here
 	}
 
 	return entity;
@@ -911,9 +1037,15 @@ static struct bfq_entity *__bfq_lookup_next_entity(struct bfq_service_tree *st,
  * @sd: the sched_data.
  * @extract: if true the returned entity will be also extracted from @sd.
  *
+<<<<<<< HEAD
  * NOTE: since we cache the next_in_service entity at each level of the
  * hierarchy, the complexity of the lookup can be decreased with
  * absolutely no effort just returning the cached next_in_service value;
+=======
+ * NOTE: since we cache the next_active entity at each level of the
+ * hierarchy, the complexity of the lookup can be decreased with
+ * absolutely no effort just returning the cached next_active value;
+>>>>>>> d40384a... bfq is here
  * we prefer to do full lookups to test the consistency of * the data
  * structures.
  */
@@ -923,6 +1055,7 @@ static struct bfq_entity *bfq_lookup_next_entity(struct bfq_sched_data *sd,
 {
 	struct bfq_service_tree *st = sd->service_tree;
 	struct bfq_entity *entity;
+<<<<<<< HEAD
 	int i = 0;
 
 	BUG_ON(sd->in_service_entity != NULL);
@@ -935,16 +1068,36 @@ static struct bfq_entity *bfq_lookup_next_entity(struct bfq_sched_data *sd,
 			i = BFQ_IOPRIO_CLASSES - 1;
 			bfqd->bfq_class_idle_last_service = jiffies;
 			sd->next_in_service = entity;
+=======
+	int i=0;
+
+	BUG_ON(sd->active_entity != NULL);
+
+	if (bfqd != NULL &&
+	    jiffies - bfqd->bfq_class_idle_last_service > BFQ_CL_IDLE_TIMEOUT) {
+		entity = __bfq_lookup_next_entity(st + BFQ_IOPRIO_CLASSES - 1, true);
+		if (entity != NULL) {
+			i = BFQ_IOPRIO_CLASSES - 1;
+			bfqd->bfq_class_idle_last_service = jiffies;
+			sd->next_active = entity;
+>>>>>>> d40384a... bfq is here
 		}
 	}
 	for (; i < BFQ_IOPRIO_CLASSES; i++) {
 		entity = __bfq_lookup_next_entity(st + i, false);
 		if (entity != NULL) {
 			if (extract) {
+<<<<<<< HEAD
 				bfq_check_next_in_service(sd, entity);
 				bfq_active_extract(st + i, entity);
 				sd->in_service_entity = entity;
 				sd->next_in_service = NULL;
+=======
+				bfq_check_next_active(sd, entity);
+				bfq_active_extract(st + i, entity);
+				sd->active_entity = entity;
+				sd->next_active = NULL;
+>>>>>>> d40384a... bfq is here
 			}
 			break;
 		}
@@ -962,7 +1115,11 @@ static struct bfq_queue *bfq_get_next_queue(struct bfq_data *bfqd)
 	struct bfq_sched_data *sd;
 	struct bfq_queue *bfqq;
 
+<<<<<<< HEAD
 	BUG_ON(bfqd->in_service_queue != NULL);
+=======
+	BUG_ON(bfqd->active_queue != NULL);
+>>>>>>> d40384a... bfq is here
 
 	if (bfqd->busy_queues == 0)
 		return NULL;
@@ -980,6 +1137,7 @@ static struct bfq_queue *bfq_get_next_queue(struct bfq_data *bfqd)
 	return bfqq;
 }
 
+<<<<<<< HEAD
 static void __bfq_bfqd_reset_in_service(struct bfq_data *bfqd)
 {
 	if (bfqd->in_service_bic != NULL) {
@@ -988,6 +1146,16 @@ static void __bfq_bfqd_reset_in_service(struct bfq_data *bfqd)
 	}
 
 	bfqd->in_service_queue = NULL;
+=======
+static void __bfq_bfqd_reset_active(struct bfq_data *bfqd)
+{
+	if (bfqd->active_bic != NULL) {
+		put_io_context(bfqd->active_bic->icq.ioc);
+		bfqd->active_bic = NULL;
+	}
+
+	bfqd->active_queue = NULL;
+>>>>>>> d40384a... bfq is here
 	del_timer(&bfqd->idle_slice_timer);
 }
 
@@ -996,8 +1164,13 @@ static void bfq_deactivate_bfqq(struct bfq_data *bfqd, struct bfq_queue *bfqq,
 {
 	struct bfq_entity *entity = &bfqq->entity;
 
+<<<<<<< HEAD
 	if (bfqq == bfqd->in_service_queue)
 		__bfq_bfqd_reset_in_service(bfqd);
+=======
+	if (bfqq == bfqd->active_queue)
+		__bfq_bfqd_reset_active(bfqd);
+>>>>>>> d40384a... bfq is here
 
 	bfq_deactivate_entity(entity, requeue);
 }
@@ -1025,8 +1198,11 @@ static void bfq_del_bfqq_busy(struct bfq_data *bfqd, struct bfq_queue *bfqq,
 
 	BUG_ON(bfqd->busy_queues == 0);
 	bfqd->busy_queues--;
+<<<<<<< HEAD
 	if (bfqq->raising_coeff > 1)
 		bfqd->raised_busy_queues--;
+=======
+>>>>>>> d40384a... bfq is here
 
 	bfq_deactivate_bfqq(bfqd, bfqq, requeue);
 }
@@ -1037,7 +1213,11 @@ static void bfq_del_bfqq_busy(struct bfq_data *bfqd, struct bfq_queue *bfqq,
 static void bfq_add_bfqq_busy(struct bfq_data *bfqd, struct bfq_queue *bfqq)
 {
 	BUG_ON(bfq_bfqq_busy(bfqq));
+<<<<<<< HEAD
 	BUG_ON(bfqq == bfqd->in_service_queue);
+=======
+	BUG_ON(bfqq == bfqd->active_queue);
+>>>>>>> d40384a... bfq is here
 
 	bfq_log_bfqq(bfqd, bfqq, "add to busy");
 
@@ -1045,6 +1225,9 @@ static void bfq_add_bfqq_busy(struct bfq_data *bfqd, struct bfq_queue *bfqq)
 
 	bfq_mark_bfqq_busy(bfqq);
 	bfqd->busy_queues++;
+<<<<<<< HEAD
 	if (bfqq->raising_coeff > 1)
 		bfqd->raised_busy_queues++;
+=======
+>>>>>>> d40384a... bfq is here
 }
