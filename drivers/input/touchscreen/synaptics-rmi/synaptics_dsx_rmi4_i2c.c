@@ -33,9 +33,7 @@
 #include <linux/regulator/consumer.h>
 #include <linux/input/synaptics_dsx.h>
 #include <linux/input/synaptics_dsx_rmi4_i2c.h>
-#ifdef KERNEL_ABOVE_2_6_38
 #include <linux/input/mt.h>
-#endif
 
 #include <linux/input/FIH-tool/config.h>
 
@@ -2299,6 +2297,14 @@ static int __devexit synaptics_rmi4_remove(struct i2c_client *client)
  */
 static void synaptics_rmi4_sensor_sleep(struct synaptics_rmi4_data *rmi4_data)
 {
+
+#ifdef CONFIG_TOUCHSCREEN_PREVENT_SLEEP
+	if ((s2w_switch > 0) || (dt2w_switch > 0)) {
+		pr_info("sleep avoided!\n");
+		return;
+	} else {
+#endif
+
 	int retval;
 	unsigned char device_ctrl;
 
@@ -2327,6 +2333,9 @@ static void synaptics_rmi4_sensor_sleep(struct synaptics_rmi4_data *rmi4_data)
 		rmi4_data->sensor_sleep = true;
 	}
 
+#ifdef CONFIG_TOUCHSCREEN_PREVENT_SLEEP
+	}
+#endif
 	return;
 }
 
@@ -2339,6 +2348,13 @@ static void synaptics_rmi4_sensor_sleep(struct synaptics_rmi4_data *rmi4_data)
  */
 static void synaptics_rmi4_sensor_wake(struct synaptics_rmi4_data *rmi4_data)
 {
+
+#ifdef CONFIG_TOUCHSCREEN_PREVENT_SLEEP
+	if ((s2w_switch > 0) || (dt2w_switch > 0)) {
+		pr_info("wake avoided!\n");
+		return;
+	} else {
+#endif	
 	int retval;
 	unsigned char device_ctrl;
 
@@ -2366,6 +2382,10 @@ static void synaptics_rmi4_sensor_wake(struct synaptics_rmi4_data *rmi4_data)
 	} else {
 		rmi4_data->sensor_sleep = false;
 	}
+
+#ifdef CONFIG_TOUCHSCREEN_PREVENT_SLEEP
+	}
+#endif
 
 	return;
 }
@@ -2441,12 +2461,6 @@ static int synaptics_rmi4_suspend(struct device *dev)
 	const struct synaptics_dsx_platform_data *platform_data =
 			rmi4_data->board;
 
-#ifdef CONFIG_TOUCHSCREEN_PREVENT_SLEEP
-	if ((s2w_switch > 0) || (dt2w_switch > 0)) {
-		pr_info("suspend avoided!\n");
-		return 0;
-	} else {
-#endif
 	if (!rmi4_data->sensor_sleep) {
 		rmi4_data->touch_stopped = true;
 		wake_up(&rmi4_data->wait);
@@ -2458,9 +2472,7 @@ static int synaptics_rmi4_suspend(struct device *dev)
 		regulator_disable(rmi4_data->regulator);
 
 	return 0;
-#ifdef CONFIG_TOUCHSCREEN_PREVENT_SLEEP
-	}
-#endif
+
 }
 
  /**
