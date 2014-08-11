@@ -39,6 +39,11 @@
 
 #include <linux/input/FIH-tool/config.h>
 
+#ifdef CONFIG_TOUCHSCREEN_PREVENT_SLEEP
+#include <linux/input/sweep2wake.h>
+#include <linux/input/doubletap2wake.h>
+#endif
+
 #define DRIVER_NAME "synaptics_dsx_i2c"
 #define INPUT_PHYS_NAME "synaptics_dsx_i2c/input0"
 
@@ -2436,6 +2441,12 @@ static int synaptics_rmi4_suspend(struct device *dev)
 	const struct synaptics_dsx_platform_data *platform_data =
 			rmi4_data->board;
 
+#ifdef CONFIG_TOUCHSCREEN_PREVENT_SLEEP
+	if ((s2w_switch > 0) || (dt2w_switch > 0)) {
+		pr_info("suspend avoided!\n");
+		return 0;
+	} else {
+#endif
 	if (!rmi4_data->sensor_sleep) {
 		rmi4_data->touch_stopped = true;
 		wake_up(&rmi4_data->wait);
@@ -2447,6 +2458,9 @@ static int synaptics_rmi4_suspend(struct device *dev)
 		regulator_disable(rmi4_data->regulator);
 
 	return 0;
+#ifdef CONFIG_TOUCHSCREEN_PREVENT_SLEEP
+	}
+#endif
 }
 
  /**
