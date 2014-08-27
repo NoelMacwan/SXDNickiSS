@@ -2,7 +2,7 @@ ui_print(" ");
 ui_print("AnyKernel Updater by Koush.");
 ui_print("Updated and Modified for Xperia M/M Dual by thirdzcee.");
 ui_print("+===================+");
-ui_print("+ SXDNickiSS Kernel +");
+ui_print("+ SXDNickiSS Lite Kernel +");
 ui_print("+===================+");
 ui_print(" ");
 ui_print("Developed by Noel Macwan");
